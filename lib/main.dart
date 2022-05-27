@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 
 void main() {
   runApp(MapTest());
@@ -23,7 +24,7 @@ class _MapTestState extends State<MapTest> {
     LatLng(48.694746, 6.184181),
   ];
 
-   List<Marker> _markers = [];
+  List<Marker> _markers = [];
 
   @override
   void initState() {
@@ -52,25 +53,45 @@ class _MapTestState extends State<MapTest> {
           child: FlutterMap(
             // mapController: ,
             options:
-                MapOptions(center: LatLng(48.6907359, 6.1825126), zoom: 14.0),
+                MapOptions(center: LatLng(48.6907359, 6.1825126), zoom: 14.0, plugins: [MarkerClusterPlugin(),]),
             layers: [
               TileLayerOptions(
-                  minZoom: 1,
-                  maxZoom: 18,
-                  backgroundColor: Colors.black,
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
-                  attributionBuilder: (_) {
-                    return Text('Test');
+                minZoom: 1,
+                maxZoom: 18,
+                backgroundColor: Colors.black,
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
+                // attributionBuilder: (_) {
+                //   return Text('Test');
+                // }
+              ),
+
+              //# cluster. With cluster pakckage
+              MarkerClusterLayerOptions(
+                  maxClusterRadius: 120,
+                  disableClusteringAtZoom: 12,
+                  size: Size(50, 50),
+                  fitBoundsOptions:
+                      FitBoundsOptions(padding: EdgeInsets.all(50)),
+                  markers: _markers,
+                  polygonOptions: PolygonOptions(
+                      borderColor: Colors.blueAccent,
+                      color: Colors.black12,
+                      borderStrokeWidth: 3),
+                  builder: (context, markers) {
+                    return Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 69, 66, 241), shape: BoxShape.circle),
+                      child: Text('${markers.length}', style: TextStyle(color: Color.fromARGB(255, 233, 228, 228)) ),
+                    );
                   }),
 
+              //# defined up
+              // MarkerLayerOptions(markers: _markers),
 
-// https://techblog.geekyants.com/implementing-flutter-maps-with-osm
-
-
-              // MarkerLayerOptions(markers: _markers)
-
+              //# define here
               //  MarkerLayerOptions(
               //   markers: [
               //     Marker(
