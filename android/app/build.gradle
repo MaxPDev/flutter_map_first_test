@@ -47,7 +47,8 @@ android {
         applicationId "com.example.fr_piscadev_osmtest"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        // minSdkVersion flutter.minSdkVersion
+        minSdkVersion 19// OU 32 // ligne rajoutée pour plugin osm. Si inutile, utiliser ligne au dessus
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

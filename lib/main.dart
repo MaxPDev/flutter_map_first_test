@@ -1,79 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-// import 'package:flutter_map/flutter_map.dart';
-// import 'package:latlong2/latlong.dart';
-// import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: OSMTest(),
-  )
-  );
+    home: MapTest(),
+  ));
 }
 
-class OSMTest extends StatefulWidget {
-  const OSMTest({Key? key}) : super(key: key);
+class MapTest extends StatefulWidget {
+  MapTest({Key? key}) : super(key: key);
 
   @override
-  State<OSMTest> createState() => _OSMTestState();
+  State<MapTest> createState() => _MapTestState();
 }
 
-class _OSMTestState extends State<OSMTest> {
+class _MapTestState extends State<MapTest> {
 
-  MapController mapController = MapController(
-                          initMapWithUserPosition: false,
-                          initPosition: GeoPoint(latitude: 47.4358055, longitude: 8.4737324),
-                          // areaLimit: BoundingBox( east: 10.4922941, north: 47.8084648, south: 45.817995, west: 5.9559113,),
-                      );
+  // final PopupController _popupController = PopupController(initiallySelectedMarkers: _markers);
+  final MapController _mapController = MapController();
 
+  final List<LatLng> _latLngList = [
+    LatLng(48.647956, 6.144231),
+    LatLng(48.703904, 6.176262),
+    LatLng(48.696855, 6.170692),
+    LatLng(48.694655, 6.177156),
+    LatLng(48.693182, 6.177806),
+    LatLng(48.694746, 6.184181),
+  ];
 
+  List<Marker> _markers = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _markers = _latLngList
+        .map((point) => Marker(
+              point: point,
+              width: 60,
+              height: 60,
+              builder: (context) => Icon(
+                Icons.pin_drop,
+                size: 60,
+                color: Colors.blueAccent,
+              ),
+            ))
+        .toList();
+  }
+
+  //! adresse finding
+  //! rotate off, popup seulement à un certain zoom et qui se réaffiche, switch case, récup data, ,db,modèle, trajet, flutter_osm_map
+  //! bottome nav
+  //! autres icone
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Nancy Stationnement Test"),
+      ),
+      body: Container(
+        child: FlutterMap(
+          mapController: _mapController,
 
-    return Container(
-      child:  OSMFlutter( 
-        controller: mapController,
-        trackMyPosition: false,
-        initZoom: 12,
-        minZoomLevel: 8,
-        maxZoomLevel: 14,
-        stepZoom: 1.0,
-        // userLocationMarker: UserLocationMaker(
-        //     personMarker: MarkerIcon(
-        //         icon: Icon(
-        //             Icons.location_history_rounded,
-        //             color: Colors.red,
-        //             size: 48,
-        //         ),
-        //     ),
-        //     directionArrowMarker: MarkerIcon(
-        //         icon: Icon(
-        //             Icons.double_arrow,
-        //             size: 48,
-        //         ),
-        //     ),
-        // ),
-        //  roadConfiguration: RoadConfiguration(
-        //         startIcon: MarkerIcon(
-        //           icon: Icon(
-        //             Icons.person,
-        //             size: 64,
-        //             color: Colors.brown,
-        //           ),
-        //         ),
-        //         roadColor: Colors.yellowAccent,
-        // ),
-        // markerOption: MarkerOption(
-        //     defaultMarker: MarkerIcon(
-        //         icon: Icon(
-        //           Icons.person_pin_circle,
-        //           color: Colors.blue,
-        //           size: 56,
-        //           ),
-        //         )
-        // ),
-    )
-,
+
+
+          // - `center`- Mention the center of the map, it will be the center when the map starts.
+          // - `bounds`- It can take a list of geo-coordinates and show them all when the map starts. If both bounds & center are provided, then bounds will take preference.
+          // - `zoom`- It is used to mention the initial zoom.
+          // - `swPanBoundary`/`nePanBoundary`- These are two geocoordinate points, which can be used to have interactivity constraints.
+          // - Callbacks such as `onTap`/`onLongPress`/`onPositionChanged` can also be used.
+
+          options:
+              MapOptions(
+                center: LatLng(48.6907359, 6.1825126), 
+                zoom: 14.0, 
+                // bounds: LatLngBounds(LatLng(48.6292781, 6.0974121), LatLng(48.7589048, 6.3322449)), //# affiche la zone en délimitant des coins
+                interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag, // not rotate
+                plugins: [MarkerClusterPlugin(),
+                ]),
+          layers: [
+            TileLayerOptions(
+              minZoom: 1,
+              maxZoom: 18,
+              backgroundColor: Colors.black,
+              urlTemplate:
+                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              subdomains: ['a', 'b', 'c'],
+              // attributionBuilder: (_) {
+              //   return Text('Test');
+              // }
+            ),
+
+            //# cluster. With cluster pakckage
+            MarkerClusterLayerOptions(
+                maxClusterRadius: 120,
+                disableClusteringAtZoom: 12,
+                size: Size(50, 50),
+                fitBoundsOptions:
+                    FitBoundsOptions(padding: EdgeInsets.all(50)),
+                markers: _markers,
+                polygonOptions: PolygonOptions(
+                    borderColor: Colors.blueAccent,
+                    color: Colors.black12,
+                    borderStrokeWidth: 3),
+
+                popupOptions: PopupOptions(
+                  popupSnap:  PopupSnap.markerTop,
+                  popupController: PopupController(initiallySelectedMarkers: _markers), //!switch case ici + afficher les popup lors d'un certain zoom
+                  // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
+                  popupBuilder: (_, marker) => Container(
+                    alignment: Alignment.center,
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.black, shape: BoxShape.circle),
+                      child: GestureDetector(
+                        onTap: () => PopupController(initiallySelectedMarkers: _markers), //! ou pas
+                        child: Text(
+                          'Popup',
+                          style: TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                      )
+                      ),
+                  
+                ),
+                builder: (context, markers) {
+                  return Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 69, 66, 241), shape: BoxShape.circle),
+                    child: Text('${markers.length}', style: TextStyle(color: Color.fromARGB(255, 233, 228, 228)) ),
+                  );
+                }),
+
+            //# defined up
+            // MarkerLayerOptions(markers: _markers),
+
+            //# define here
+            //  MarkerLayerOptions(
+            //   markers: [
+            //     Marker(
+            //       width: 80.0,
+            //       height: 80.0,
+            //       point: LatLng(48.693, 6.187),
+            //       builder: (ctx) =>
+            //       Container(
+            //         child: FlutterLogo(),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+          ],
+        ),
+      ),
+          bottomNavigationBar: BottomAppBar(
+      color: Color.fromARGB(235, 241, 238, 49),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
+        ],
+      ) ,
+    ),
     );
   }
 }
