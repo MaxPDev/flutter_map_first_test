@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:fr_piscadev_osmtest/services/g_ny.dart';
+
+import 'dart:developer';
 
 void main() {
   runApp(MaterialApp(
@@ -37,6 +41,9 @@ class _MapTestState extends State<MapTest> {
     // TODO: implement initState
     super.initState();
 
+    Future<List<Parking>> parkings = getParkings();
+    inspect(parkings);
+
     _markers = _latLngList
         .map((point) => Marker(
               point: point,
@@ -52,9 +59,7 @@ class _MapTestState extends State<MapTest> {
   }
 
   //! adresse finding
-  //! rotate off, popup seulement à un certain zoom et qui se réaffiche, switch case, récup data, ,db,modèle, trajet, flutter_osm_map
-  //! bottome nav
-  //! autres icone
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,7 +166,7 @@ class _MapTestState extends State<MapTest> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
+          IconButton(onPressed: () {getParkings();}, icon: Icon(Icons.directions_walk_outlined)),
           IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
           IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
           IconButton(onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
