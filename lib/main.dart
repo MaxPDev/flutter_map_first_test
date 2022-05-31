@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 
 import 'dart:developer';
@@ -35,27 +37,95 @@ class _MapTestState extends State<MapTest> {
   ];
 
   List<Marker> _markers = [];
+  List<Parking> parkings= [];
+
+  // récupère les parkings et le met dans la variable
+  Future<void> getParkings() async {
+    parkings = await GNy().getParkings();
+    // inspect(parkings);
+    await getMarkers();
+    // inspect(_markers);
+  }
+
+  getMarkers() async {
+    _markers.clear();
+    for (var parking in parkings) {
+      _markers.add(Marker(
+        //! attention point ne peux pas LatLng?, alors coordonate en required.
+        //! Si coordonnées pas définit, plantage de toute l'appli ?
+        point: LatLng(parking.geometryCoordinates[1], parking.geometryCoordinates[0]),
+        width: 30,
+        height: 30,
+        builder: (context) => Icon(
+          FontAwesomeIcons.squareParking,
+          size: 30,
+          color: Colors.blueAccent,
+        )));
+    }
+    inspect(_markers);
+    _markers = _markers.toList();
+    inspect(_markers);
+
+  }
+
+  int? getAvailableFromCoordinates(LatLng point) {
+    Parking parkingPopup = parkings.firstWhere((parking) 
+      => parking.geometryCoordinates[1] 
+        == point.latitude && parking.geometryCoordinates[0] == point.longitude);
+    return parkingPopup.mgnAvailable;
+  }
+
+  Color? getColorFromCoordinates(LatLng point) {
+    Parking parkingPopup = parkings.firstWhere((parking) 
+      => parking.geometryCoordinates[1] 
+        == point.latitude && parking.geometryCoordinates[0] == point.longitude);
+
+    switch (parkingPopup.uiColorEn) {
+      case "blue": {
+        return Colors.blue;
+      }
+
+      case "orange": {
+        return Colors.orange;
+      }
+
+      case "green": {
+        return Colors.green;
+      }
+
+      case "red": {
+        return Colors.red;
+      }
+
+      default: {
+        return Colors.black;
+      }
+    }
+  }
+
+
+  
 
   @override
-  void initState() {
+  initState() {
     // TODO: implement initState
     super.initState();
 
-    Future<List<Parking>> parkings = getParkings();
-    inspect(parkings);
+    // fait récupérer les parkings
+    getParkings();
 
-    _markers = _latLngList
-        .map((point) => Marker(
-              point: point,
-              width: 60,
-              height: 60,
-              builder: (context) => Icon(
-                Icons.pin_drop,
-                size: 60,
-                color: Colors.blueAccent,
-              ),
-            ))
-        .toList();
+    // _markers = _latLngList
+    //     .map((point) => Marker(
+    //           point: point,
+    //           width: 60,
+    //           height: 60,
+    //           builder: (context) => Icon(
+    //             Icons.pin_drop,
+    //             size: 60,
+    //             color: Colors.blueAccent,
+    //           ),
+    //         ))
+    //     .toList();
   }
 
   //! adresse finding
@@ -118,14 +188,14 @@ class _MapTestState extends State<MapTest> {
                   // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
                   popupBuilder: (_, marker) => Container(
                     alignment: Alignment.center,
-                      height: 50,
-                      width: 50,
+                      height: 30,
+                      width: 30,
                       decoration: BoxDecoration(
-                        color: Colors.black, shape: BoxShape.circle),
+                        color: getColorFromCoordinates(marker.point), shape: BoxShape.circle),
                       child: GestureDetector(
                         onTap: () => PopupController(initiallySelectedMarkers: _markers), //! ou pas
                         child: Text(
-                          'Popup',
+                          "${getAvailableFromCoordinates(marker.point)}",
                           style: TextStyle(color: Colors.white, fontSize: 10),
                         ),
                       )
@@ -166,10 +236,13 @@ class _MapTestState extends State<MapTest> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButton(onPressed: () {getParkings();}, icon: Icon(Icons.directions_walk_outlined)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
           IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
           IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
           IconButton(onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
+          IconButton(onPressed: () {getParkings();setState(() {
+            
+          });}, icon: Icon(Icons.data_exploration_sharp)),
         ],
       ) ,
     ),
