@@ -39,6 +39,7 @@ dependencies:
   flutter_map_marker_cluster: ^0.4.4
   flutter_osm_plugin: ^0.34.0+1
   font_awesome_flutter: ^10.1.0
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:

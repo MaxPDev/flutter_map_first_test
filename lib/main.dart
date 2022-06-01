@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 // import 'package:fr_piscadev_osmtest/models/parking.dart';
 // import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
 import 'package:fr_piscadev_osmtest/screens/homeScreen.dart';
 import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 
 import 'dart:developer';
+
 
 
 void main() {
@@ -36,29 +38,31 @@ class _MapTestState extends State<MapTest> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        child: FutureBuilder(
-          future: GNy().fetchParkings(),
-          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-              return Center(
-                child: SizedBox(
-                  height: 27,
-                  width: 27,
-                  child: CircularProgressIndicator()));
+
+    return HomeScreen();
+    // return SafeArea(
+    //   child: Container(
+    //     child: FutureBuilder(
+    //       future: GNy().fetchParkings(),
+    //       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+    //         switch (snapshot.connectionState) {
+    //           case ConnectionState.waiting:
+    //           return Center(
+    //             child: SizedBox(
+    //               height: 27,
+    //               width: 27,
+    //               child: CircularProgressIndicator()));
                 
-                break;
-              default:
-                if (snapshot.hasError)
-                  return Text('Main Error: ${snapshot.error}');
-                return HomeScreen();
-            }
-          },
-        ),
-      ),
-    );
+    //             break;
+    //           default:
+    //             if (snapshot.hasError)
+    //               return Text('Main Error: ${snapshot.error}');
+    //             return HomeScreen();
+    //         }
+    //       },
+    //     ),
+    //   ),
+    // );
   }
 }
 
