@@ -4,13 +4,16 @@ import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'dart:developer';
 
 class GNy {
-// late Parking parking;
-  final List<Parking> parkings = [];
+// late Parking parking; // static surtout pour fichier data ?
+  static final List<Parking> _parkings = [];
 
   GNy();
 
 // Récupérer donnée parking depui g-ny, créer list d'objets parkings.
-  Future<List<Parking>> getParkings() async {
+/**
+ * Récupérer les données de parkings depuis go.g-ny.org
+ */
+  Future<void> fetchParkings() async {
     try {
       var uri = Uri.parse('https://go.g-ny.org/stationnement?output=json');
       Response resp = await get(uri);
@@ -19,19 +22,31 @@ class GNy {
       // List<Parking> parkings = data.map((data) => Parking.fromJson(data)).toList();
       // parkings = Parking.fromJson(jsonDecode(resp.body));
       // print(data);
-      parkings.clear();
+      _parkings.clear();
       data.forEach((key, value) {
-        parkings.add(Parking.fromJson(data[key]));
+        _parkings.add(Parking.fromJson(data[key]));
       });
-      // inspect(parkings);
-      return parkings;
 
       // print(parkings);
     } catch (e) {
-      print('caught errpr : $e');
-      return parkings;
+      print('caught error for GNy.fetchParkings() : $e');
     }
   }
+
+  List<Parking> getParkings() {
+    return _parkings;
+  }
+
+  //   // récupère les parkings et le met dans la variable
+  // Future<void> getParkings() async {
+  //   parkings = await GNy().getParkings();
+  //   // inspect(parkings);
+  //   await getMarkers();
+  //   // inspect(_markers);
+  // }
+
+
+
 
 // Récupérer
 }
