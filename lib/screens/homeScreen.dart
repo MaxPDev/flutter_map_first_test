@@ -41,11 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   _initProcess() {
-    //   Provider.of<GNy>(context, listen: false).fetchParkings()
-    // .then((value) {
-    //   Provider.of<GNy>(context, listen: false).createMarkers();
-    // });
-        Provider.of<GNy>(context, listen: false).createMarkers();
+      Provider.of<GNy>(context, listen: false).fetchParkings()
+    .then((value) {
+      Provider.of<GNy>(context, listen: false).createMarkers();
+    });
+        // Provider.of<GNy>(context, listen: false).createMarkers();
   }
 
   @override
@@ -65,14 +65,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // });
 
-    // SchedulerBinding.instance.addPostFrameCallback((_) {
-    //   // Provider.of<GNy>(context, listen: false).fetchParkings()
-    //   //   .then((value) {
-    //   //     Provider.of<GNy>(context, listen: false).createMarkers();
-    //   //   });
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // Provider.of<GNy>(context, listen: false).fetchParkings()
+      //   .then((value) {
+      //     Provider.of<GNy>(context, listen: false).createMarkers();
+      //   });
 
-    //   // _initProcess();
-    // });
+      _initProcess();
+    });
 
   // Future.delayed(Duration.zero, () async {
   //     Provider.of<GNy>(context, listen: false).fetchParkings()
