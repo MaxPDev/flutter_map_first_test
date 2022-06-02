@@ -36,7 +36,7 @@ class GNy extends ChangeNotifier {
       });
 
       print("fetchParking ${_parkings.length}");
-      notifyListeners();
+      // notifyListeners();
     } catch (e) {
       print('caught error for GNy.fetchParkings() : $e');
     }
@@ -81,7 +81,7 @@ class GNy extends ChangeNotifier {
     _markers.clear();
     _markers = markers;
     print("CreateMarker ${_markers.length}");
-    notifyListeners();
+    // notifyListeners();
   }
 
     List<Marker> getMarkers() {
