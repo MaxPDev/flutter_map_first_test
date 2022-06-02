@@ -1,13 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert'; // to user jsonDecode
 import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'dart:developer';
 
-class GNy {
+class GNy extends ChangeNotifier {
 // late Parking parking; // static surtout pour fichier data ?
   static final List<Parking> _parkings = [];
 
-  GNy();
+  GNy() {
+    print("gny constructor");
+  }
 
 // Récupérer donnée parking depui g-ny, créer list d'objets parkings.
 /**
@@ -27,7 +30,7 @@ class GNy {
         _parkings.add(Parking.fromJson(data[key]));
       });
 
-      // print(parkings);
+      notifyListeners();
     } catch (e) {
       print('caught error for GNy.fetchParkings() : $e');
     }

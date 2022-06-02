@@ -12,6 +12,8 @@ import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 
 import 'dart:developer';
 
+import 'package:provider/provider.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -20,9 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   bool isLoading = true;
-
 
   // final PopupController _popupController = PopupController(initiallySelectedMarkers: _markers);
   final MapController _mapController = MapController();
@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // ];
 
   List<Marker> _markers = [];
-  List<Parking> parkings= [];
+  List<Parking> parkings = [];
 
   /**
    * Construit les markers depuis les coordonnées des objets parkings.
@@ -46,30 +46,30 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Marker> markers = [];
     for (var parking in parkings) {
       markers.add(Marker(
-        //? attention point ne peux pas LatLng?, alors coordinates en required.
-        //! Si coordonnées pas définit, plantage de toute l'appli ?
-        point: LatLng(parking.geometryCoordinates[1], parking.geometryCoordinates[0]),
-        width: 30,
-        height: 30,
-        builder: (context) => Icon(
-          FontAwesomeIcons.squareParking,
-          size: 30,
-          color: Colors.blueAccent,
-        )));
+          //? attention point ne peux pas LatLng?, alors coordinates en required.
+          //! Si coordonnées pas définit, plantage de toute l'appli ?
+          point: LatLng(
+              parking.geometryCoordinates[1], parking.geometryCoordinates[0]),
+          width: 30,
+          height: 30,
+          builder: (context) => Icon(
+                FontAwesomeIcons.squareParking,
+                size: 30,
+                color: Colors.blueAccent,
+              )));
     }
     inspect(markers);
     return markers;
   }
-
 
   /**
    * Récupère et rénvoie la propriété available depuis les coordonnées
    */
   //! Contournement
   int? getAvailableFromCoordinates(LatLng point) {
-    Parking parkingPopup = parkings.firstWhere((parking) 
-      => parking.geometryCoordinates[1] 
-        == point.latitude && parking.geometryCoordinates[0] == point.longitude);
+    Parking parkingPopup = parkings.firstWhere((parking) =>
+        parking.geometryCoordinates[1] == point.latitude &&
+        parking.geometryCoordinates[0] == point.longitude);
     return parkingPopup.mgnAvailable;
   }
 
@@ -78,45 +78,56 @@ class _HomeScreenState extends State<HomeScreen> {
    */
   //! Contournement
   Color? getColorFromCoordinates(LatLng point) {
-    Parking parkingPopup = parkings.firstWhere((parking) 
-      => parking.geometryCoordinates[1] 
-        == point.latitude && parking.geometryCoordinates[0] == point.longitude);
+    Parking parkingPopup = parkings.firstWhere((parking) =>
+        parking.geometryCoordinates[1] == point.latitude &&
+        parking.geometryCoordinates[0] == point.longitude);
 
     switch (parkingPopup.uiColorEn) {
-      case "blue": {
-        return Colors.blue;
-      }
+      case "blue":
+        {
+          return Colors.blue;
+        }
 
-      case "orange": {
-        return Colors.orange;
-      }
+      case "orange":
+        {
+          return Colors.orange;
+        }
 
-      case "green": {
-        return Colors.green;
-      }
+      case "green":
+        {
+          return Colors.green;
+        }
 
-      case "red": {
-        return Colors.red;
-      }
+      case "red":
+        {
+          return Colors.red;
+        }
 
-      default: {
-        return Colors.black;
-      }
+      default:
+        {
+          return Colors.black;
+        }
     }
   }
-  
 
   @override
   initState() {
     // TODO: implement initState
     super.initState();
 
-    // Récupère les parkings
-    parkings = GNy().getParkings();
+    // // Récupère les parkings
+    // parkings = GNy().getParkings();
 
-    // Nettoie la liste des markers, et la remplie
-    _markers.clear(); //! à réfléchir dans la vraie app, genre rajouter si nouveau
-    _markers = getMarkers().toList();
+    // // Nettoie la liste des markers, et la remplie
+    // _markers.clear(); //! à réfléchir dans la vraie app, genre rajouter si nouveau
+    // _markers = getMarkers().toList();
+
+    // GNy().fetchParkings().then((value) {
+    //   parkings = GNy().getParkings();
+    //   _markers.clear();
+    //   _markers = getMarkers().toList();
+    // });
+
 
     // fait récupérer les parkings
     // getParkings();
@@ -137,10 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //! adresse finding
 
-  
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Nancy Stationnement Test"),
       ),
@@ -148,29 +158,27 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FlutterMap(
           mapController: _mapController,
 
-
-
           // - `center`- Mention the center of the map, it will be the center when the map starts.
           // - `bounds`- It can take a list of geo-coordinates and show them all when the map starts. If both bounds & center are provided, then bounds will take preference.
           // - `zoom`- It is used to mention the initial zoom.
           // - `swPanBoundary`/`nePanBoundary`- These are two geocoordinate points, which can be used to have interactivity constraints.
           // - Callbacks such as `onTap`/`onLongPress`/`onPositionChanged` can also be used.
 
-          options:
-              MapOptions(
-                center: LatLng(48.6907359, 6.1825126), 
-                zoom: 14.0, 
-                // bounds: LatLngBounds(LatLng(48.6292781, 6.0974121), LatLng(48.7589048, 6.3322449)), //# affiche la zone en délimitant des coins
-                interactiveFlags: InteractiveFlag.pinchZoom | InteractiveFlag.drag, // not rotate
-                plugins: [MarkerClusterPlugin(),
-                ]),
+          options: MapOptions(
+              center: LatLng(48.6907359, 6.1825126),
+              zoom: 14.0,
+              // bounds: LatLngBounds(LatLng(48.6292781, 6.0974121), LatLng(48.7589048, 6.3322449)), //# affiche la zone en délimitant des coins
+              interactiveFlags: InteractiveFlag.pinchZoom |
+                  InteractiveFlag.drag, // not rotate
+              plugins: [
+                MarkerClusterPlugin(),
+              ]),
           layers: [
             TileLayerOptions(
               minZoom: 1,
               maxZoom: 18,
               backgroundColor: Colors.black,
-              urlTemplate:
-                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
               subdomains: ['a', 'b', 'c'],
               // attributionBuilder: (_) {
               //   return Text('Test');
@@ -182,40 +190,43 @@ class _HomeScreenState extends State<HomeScreen> {
                 maxClusterRadius: 120,
                 disableClusteringAtZoom: 12,
                 size: Size(50, 50),
-                fitBoundsOptions:
-                    FitBoundsOptions(padding: EdgeInsets.all(50)),
+                fitBoundsOptions: FitBoundsOptions(padding: EdgeInsets.all(50)),
                 markers: _markers,
                 polygonOptions: PolygonOptions(
                     borderColor: Colors.blueAccent,
                     color: Colors.black12,
                     borderStrokeWidth: 3),
-
                 popupOptions: PopupOptions(
-                  popupSnap:  PopupSnap.markerTop,
-                  popupController: PopupController(initiallySelectedMarkers: _markers), //!switch case ici + afficher les popup lors d'un certain zoom
+                  popupSnap: PopupSnap.markerTop,
+                  popupController: PopupController(
+                      initiallySelectedMarkers:
+                          _markers), //!switch case ici + afficher les popup lors d'un certain zoom
                   // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
                   popupBuilder: (_, marker) => Container(
-                    alignment: Alignment.center,
+                      alignment: Alignment.center,
                       height: 30,
                       width: 30,
                       decoration: BoxDecoration(
-                        color: getColorFromCoordinates(marker.point), shape: BoxShape.circle),
+                          color: getColorFromCoordinates(marker.point),
+                          shape: BoxShape.circle),
                       child: GestureDetector(
-                        onTap: () => PopupController(initiallySelectedMarkers: _markers), //! ou pas
+                        onTap: () => PopupController(
+                            initiallySelectedMarkers: _markers), //! ou pas
                         child: Text(
                           "${getAvailableFromCoordinates(marker.point)}",
                           style: TextStyle(color: Colors.white, fontSize: 10),
                         ),
-                      )
-                      ),
-                  
+                      )),
                 ),
                 builder: (context, markers) {
                   return Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 69, 66, 241), shape: BoxShape.circle),
-                    child: Text('${markers.length}', style: TextStyle(color: Color.fromARGB(255, 233, 228, 228)) ),
+                        color: Color.fromARGB(255, 69, 66, 241),
+                        shape: BoxShape.circle),
+                    child: Text('${markers.length}',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 233, 228, 228))),
                   );
                 }),
 
@@ -239,21 +250,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-          bottomNavigationBar: BottomAppBar(
-      color: Color.fromARGB(235, 241, 238, 49),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
-          // IconButton(onPressed: () {GNy().fetchParkings() ;setState(() {
-            
-          // });}, icon: Icon(Icons.data_exploration_sharp)),
-        ],
-      ) ,
-    ),
+      bottomNavigationBar: BottomAppBar(
+        color: Color.fromARGB(235, 241, 238, 49),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+                onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
+            IconButton(
+                onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
+            IconButton(
+                onPressed: () {
+                  // GNy().fetchParkings().then((resp) => setState(() {
+                  //       parkings = Provider.of<GNy>(context).getParkings();
+                  //       _markers.clear();
+                  //       _markers = getMarkers().toList();
+                  //     }));
+                },
+                icon: Icon(Icons.data_exploration_sharp)),
+          ],
+        ),
+      ),
     );
   }
 }
