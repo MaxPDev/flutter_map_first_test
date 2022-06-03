@@ -8,7 +8,7 @@ class VelostanCarto {
   final String name;
   final String address;
   final double lat;
-  final double long;
+  final double lng;
   final bool open;
   final bool bonus;
 
@@ -17,7 +17,7 @@ class VelostanCarto {
     required this.name,
     required this.address,
     required this.lat,
-    required this.long,
+    required this.lng,
     required this.open,
     required this.bonus,
   });
@@ -27,7 +27,7 @@ class VelostanCarto {
     String? name,
     String? address,
     double? lat,
-    double? long,
+    double? lng,
     bool? open,
     bool? bonus,
   }) => VelostanCarto(
@@ -35,7 +35,7 @@ class VelostanCarto {
     name: name ?? this.name,
     address: address ?? this.address,
     lat: lat ?? this.lat, 
-    long: long ?? this.long,
+    lng: lng ?? this.lng,
     open: open ?? this.open,
     bonus: bonus ?? this.bonus
     );
@@ -45,14 +45,32 @@ class VelostanCarto {
         // Exemple de rappel pour gérer le null :
         // id: json["id"] == null ? null : json["id"], 
 
-        id: json["@number"],
-        name: json["@name"],
-        address: json["@address"],
-        lat: json["@lat"], 
-        long: json["@long"],
-        open: json["@open"],
-        bonus: json["@bonus"]
+        id: json["@number"] as String,
+        name: json["@name"] as String,
+        address: json["@address"] as String,
+        // lat: json["@lat"].toDouble(), 
+        // lng: json["@lng"].toDouble(),
+        lat: double.parse(json["@lat"]),
+        lng: double.parse(json["@lng"]),
+        open: json["@open"] == 1,
+        bonus: json["@bonus"] == 1
         );
+
+        // Version nullable. Peut être plus safe car non bloquant pour l'appli.
+      // return VelostanCarto(
+      //   // Exemple de rappel pour gérer le null :
+      //   // id: json["id"] == null ? null : json["id"], 
+        
+      //   id: json["@number"] == null ? null : json["@number"]  as String,
+      //   name: json["@name"] == null ? null : json["@name"] as String,
+      //   address: json["@address"] == null ? null : json["@address"] as String,
+      //   // lat: json["@lat"].toDouble(), 
+      //   // lng: json["@lng"].toDouble(),
+      //   lat: json["@lat"] == null ? null : double.parse(json["@lat"]),
+      //   lng: json["@lng"] == null ? null : double.parse(json["@lng"]),
+      //   open: json["@open"] == null ? null : json["@open"] == 1,
+      //   bonus: json["@bonus"] == null ? null : json["@bonus"] == 1
+      //   );
     }
 
 }

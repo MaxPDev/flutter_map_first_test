@@ -5,10 +5,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fr_piscadev_osmtest/models/velostan_carto.dart';
 import 'package:fr_piscadev_osmtest/models/velostan_station.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 
 class Velostan extends ChangeNotifier {
 
   static final List<VelostanCarto> _stations = [];
+  List<Marker> _stationsMarkers = [];
   late VelostanSation _selectedStation; 
 
   // Récupère markers des stations avec nom, adresse, coordonnées...
@@ -34,13 +39,62 @@ class Velostan extends ChangeNotifier {
       final Xml2Json xml2json = Xml2Json();
       xml2json.parse(resp.body);
       String respJson = xml2json.toBadgerfish();
+
+      // De Json à Map
       Map<String, dynamic> data = jsonDecode(respJson);
-      print(data['carto']['markers']['marker']);
+
+      // Nettoyage de _stations, et remplissage de la liste avec les objets
+      _stations.clear();
+      for (var station in data['carto']['markers']['marker']) {
+        _stations.add(VelostanCarto.fromJson(station));
+      }
+
+      print(_stations.length);
+      notifyListeners();
 
     } catch (e) {
       print('Caught error for velostan carto fetch : $e');
     }
 
   }
+
+  List<VelostanCarto> getVelostanSations() {
+    print("getVelostanStation");
+    return _stations;
+  }
+
+      /**
+   * Construit les markers depuis les coordonnées des objets parkings.
+   */
+  void createMarkers() {
+    List<Marker> markers = [];
+    for (var station in _stations) {
+      markers.add(Marker(
+          //? attention point ne peux pas LatLng?, alors coordinates en required.
+          //! Si coordonnées pas définit, plantage de toute l'appli ?
+          point: LatLng(
+              station.lat, station.lng),
+          width: 30,
+          height: 30,
+          builder: (context) => Icon(
+                FontAwesomeIcons.pinterest,
+                size: 30,
+                color: Colors.greenAccent,
+              )
+              
+        ));
+    }
+    inspect(markers);
+    _stationsMarkers.clear();
+    _stationsMarkers = markers;
+    print("CreateMarker Velo ${_stationsMarkers.length}");
+    // notifyListeners();
+  }
+
+    List<Marker> getStationsMarkers() {
+      print("getMarker");
+    return _stationsMarkers;
+  }
+
   
 }

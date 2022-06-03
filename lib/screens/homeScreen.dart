@@ -11,6 +11,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:fr_piscadev_osmtest/services/g_ny.dart';
+import 'package:fr_piscadev_osmtest/services/velostan.dart';
 
 import 'dart:developer';
 
@@ -28,6 +29,45 @@ class _HomeScreenState extends State<HomeScreen> {
   // final PopupController _popupController = PopupController(initiallySelectedMarkers: _markers);
   final MapController _mapController = MapController();
 
+  final gny = Provider.of<GNy>;
+
+  final velostan = Provider.of<Velostan>;
+
+  final bool isParkingsSelected = true;
+  late final String? selectedPoi = null;
+
+  final List<Marker> _markers = [];
+
+  _initParking() {
+      gny(context, listen: false).fetchParkings()
+    .then((value) {
+      gny(context, listen: false).createMarkers();
+    });
+  }
+
+  _initVelostanStations() {
+      velostan(context, listen: false).fetchVelostanCarto()
+    .then((value) {
+      velostan(context, listen: false).createMarkers();
+    });
+  }
+
+  getSelectedMarkers()  {
+
+    _markers.clear();
+
+    switch (selectedPoi) {
+      case "veloStation":
+        // await _initVelostanStations();
+        _markers.addAll(velostan(context, listen: true).getStationsMarkers()); 
+        break;
+      default:
+      _markers.clear();
+    }
+    if(isParkingsSelected) {_markers.addAll(gny(context, listen: true).getMarkers());}
+
+    return _markers;
+  }
   // final List<LatLng> _latLngList = [
   //   LatLng(48.647956, 6.144231),
   //   LatLng(48.703904, 6.176262),
@@ -41,13 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // List<Parking> parkings = [];
 
 
-  _initProcess() {
-      Provider.of<GNy>(context, listen: false).fetchParkings()
-    .then((value) {
-      Provider.of<GNy>(context, listen: false).createMarkers();
-    });
-        // Provider.of<GNy>(context, listen: false).createMarkers();
-  }
 
   @override
   initState() {
@@ -72,7 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
       //     Provider.of<GNy>(context, listen: false).createMarkers();
       //   });
 
-      _initProcess();
+      _initParking();
+      _initVelostanStations();
     });
 
   // Future.delayed(Duration.zero, () async {
@@ -145,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   disableClusteringAtZoom: 12,
                   size: Size(50, 50),
                   fitBoundsOptions: FitBoundsOptions(padding: EdgeInsets.all(50)),
-                  markers: GNy.getMarkers(),
+                  markers: getSelectedMarkers(),
                   polygonOptions: PolygonOptions(
                       borderColor: Colors.blueAccent,
                       color: Colors.black12,
@@ -172,13 +206,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         )),
                   ),
-                  builder: (context, markers) {
+                  builder: (context, _markers) {
                     return Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: Color.fromARGB(255, 69, 66, 241),
                           shape: BoxShape.circle),
-                      child: Text('${markers.length}',
+                      child: Text('${_markers.length}',
                           style: TextStyle(
                               color: Color.fromARGB(255, 233, 228, 228))),
                     );
@@ -213,7 +247,11 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
                 onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
             IconButton(onPressed: () {
-              Velostan().fetchVelostanCarto();
+              setState(() {
+                selectedPoi == "veloStation" ? null : "veloStation";
+               
+              });
+
             }, icon: Icon(Icons.pedal_bike_rounded)),
             IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
             IconButton(
@@ -225,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   // //       _markers.clear();
                   // //       _markers = getMarkers().toList();
                   // //     }));
-                  Provider.of<GNy>(context, listen: false).fetchParkings().then((value) => 
-                  Provider.of<GNy>(context, listen: false).createMarkers(),);
+                  gny(context, listen: false).fetchParkings().then((value) => 
+                  gny(context, listen: false).createMarkers(),);
                    setState(() {});
                 },
                 icon: Icon(Icons.data_exploration_sharp)),
