@@ -36,7 +36,7 @@ class GNy extends ChangeNotifier {
       });
 
       print("fetchParking ${_parkings.length}");
-      // notifyListeners();
+      notifyListeners();
     } catch (e) {
       print('caught error for GNy.fetchParkings() : $e');
     }
@@ -44,6 +44,7 @@ class GNy extends ChangeNotifier {
 
   List<Parking> getParkings() {
     // await fetchParkings();
+    // notifyListeners();
     print("getParking ${_parkings.length}");
     return _parkings;
   }
@@ -98,7 +99,7 @@ class GNy extends ChangeNotifier {
     Parking parkingPopup = _parkings.firstWhere((parking) =>
         parking.geometryCoordinates[1] == point.latitude &&
         parking.geometryCoordinates[0] == point.longitude);
-    notifyListeners();
+    // notifyListeners();
     return parkingPopup.mgnAvailable;
   }
 
@@ -111,7 +112,7 @@ class GNy extends ChangeNotifier {
         parking.geometryCoordinates[1] == point.latitude &&
         parking.geometryCoordinates[0] == point.longitude);
 
-    notifyListeners();
+    // notifyListeners();
 
     switch (parkingPopup.uiColorEn) {
       case "blue":
