@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: GestureDetector(
                           onTap: () => PopupController(
                               initiallySelectedMarkers: GNy.getMarkers()), //! ou pas
-                          child: Text(
+                          child: Text( // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
                             "${GNy.getAvailableFromCoordinates(marker.point)}",
                             style: TextStyle(color: Colors.white, fontSize: 10),
                           ),
@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // //     }));
                   Provider.of<GNy>(context, listen: false).fetchParkings().then((value) => 
                   Provider.of<GNy>(context, listen: false).createMarkers(),);
-                  //  setState(() {});
+                   setState(() {});
                 },
                 icon: Icon(Icons.data_exploration_sharp)),
           ],
