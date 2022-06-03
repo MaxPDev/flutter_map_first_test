@@ -19,7 +19,7 @@ class VelostanSation {
     required this.open,
     required this.updated,
     required this.connected,
-  })
+  });
 
   VelostanSation copyWith({
     int? available,

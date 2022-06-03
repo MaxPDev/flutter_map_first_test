@@ -1,21 +1,25 @@
 class VelostanCarto {
   
-  final String? id; // number
-  final String? name;
-  final String? address;
+  // essaie de tout en required. 
+  //? Que se passe-t-il si le fetch récupère un attribut à null ?
+  //todo tester la situation d'un attribut reçu à null
+
+  final String id; // number
+  final String name;
+  final String address;
   final double lat;
   final double long;
-  final bool? open;
-  final bool? bonus;
+  final bool open;
+  final bool bonus;
 
   const VelostanCarto({
-    this.id,
-    this.name,
-    this.address,
+    required this.id,
+    required this.name,
+    required this.address,
     required this.lat,
     required this.long,
-    this.open,
-    this.bonus,
+    required this.open,
+    required this.bonus,
   });
 
   VelostanCarto copyWith({
@@ -35,5 +39,20 @@ class VelostanCarto {
     open: open ?? this.open,
     bonus: bonus ?? this.bonus
     );
+
+    factory VelostanCarto.fromJson(Map<String, dynamic> json) {
+      return VelostanCarto(
+        // Exemple de rappel pour gérer le null :
+        // id: json["id"] == null ? null : json["id"], 
+
+        id: json["@number"],
+        name: json["@name"],
+        address: json["@address"],
+        lat: json["@lat"], 
+        long: json["@long"],
+        open: json["@open"],
+        bonus: json["@bonus"]
+        );
+    }
 
 }

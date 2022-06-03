@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:fr_piscadev_osmtest/services/velostan.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -211,7 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             IconButton(
                 onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
-            IconButton(onPressed: () {}, icon: Icon(Icons.pedal_bike_rounded)),
+            IconButton(onPressed: () {
+              Velostan().fetchVelostanCarto();
+            }, icon: Icon(Icons.pedal_bike_rounded)),
             IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
             IconButton(
                 onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
