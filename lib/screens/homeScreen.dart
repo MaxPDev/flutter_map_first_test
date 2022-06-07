@@ -32,14 +32,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final velostan = Provider.of<Velostan>;
 
-  final bool isParkingsSelected = true;
-  late final String? selectedPoi = null;
+  bool isParkingsSelected = true;
+  bool isBikeSelected = false;
 
-  final List<Marker> _markers = [];
+  List<Marker> _markers = [];
+  // List<Marker> _parkingsMarkers = [];
 
-  _initParking() {
+  _initParking(context) {
     gny(context, listen: false).fetchParkings().then((value) {
-      gny(context, listen: false).createMarkers();
+      gny(context, listen: false).createMarkers(context);
+      setSelectedMarkers();
     });
   }
 
@@ -49,26 +51,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  List<Marker> getSelectedMarkers() {
+  void setSelectedMarkers() {
     _markers.clear();
 
-    switch (selectedPoi) {
-      case "veloStation":
-        // await _initVelostanStations();
-        _markers.addAll(velostan(context, listen: true).getStationsMarkers());
-        print("here");
-        break;
-      default:
-        _markers.clear();
-    }
-    if (isParkingsSelected) {
-      _markers.addAll(gny(context, listen: true).getParkingsMarkers());
+    if (this.isBikeSelected) {
+      _markers.addAll(velostan(context, listen: false).getStationsMarkers());
+    } else {
+      _markers.clear();
     }
 
-    print("getSelectedMarkers()");
+    if (this.isParkingsSelected) {
+      print(isParkingsSelected);
+      _markers.addAll(gny(context, listen: false).getParkingsMarkers());
+    }
+
+    print("setSelectedMarkers()");
     inspect(_markers);
+    setState(() {});
 
-    return _markers;
+    // return _markers;
   }
   // final List<LatLng> _latLngList = [
   //   LatLng(48.647956, 6.144231),
@@ -84,9 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   initState() {
-    // TODO: implement initState
-    super.initState();
-
     // // seulement première fois
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     //   Provider.of<GNy>(context, listen: false).fetchParkings()
@@ -103,9 +101,12 @@ class _HomeScreenState extends State<HomeScreen> {
       //     Provider.of<GNy>(context, listen: false).createMarkers();
       //   });
 
-      _initParking();
+      _initParking(context);
       _initVelostanStations();
+      // _parkingsMarkers = gny(context, listen: false).getParkingsMarkers();
     });
+    // TODO: implement initState
+    super.initState();
 
     // Future.delayed(Duration.zero, () async {
     //     Provider.of<GNy>(context, listen: false).fetchParkings()
@@ -175,35 +176,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 disableClusteringAtZoom: 12,
                 size: Size(50, 50),
                 fitBoundsOptions: FitBoundsOptions(padding: EdgeInsets.all(50)),
-                markers: getSelectedMarkers(),
+                markers: _markers.toList(),
                 polygonOptions: PolygonOptions(
                     borderColor: Colors.blueAccent,
                     color: Colors.black12,
                     borderStrokeWidth: 3),
-                // popupOptions: PopupOptions(
-                //   popupSnap: PopupSnap.markerTop,
-                //   popupController: PopupController(
-                //       initiallySelectedMarkers: GNy
-                //           .getMarkers()), //!switch case ici + afficher les popup lors d'un certain zoom
-                //   // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
-                //   popupBuilder: (_, marker) => Container(
-                //       alignment: Alignment.center,
-                //       height: 30,
-                //       width: 30,
-                //       decoration: BoxDecoration(
-                //           color: GNy.getColorFromCoordinates(marker.point),
-                //           shape: BoxShape.circle),
-                //       child: GestureDetector(
-                //         onTap: () => PopupController(
-                //             initiallySelectedMarkers:
-                //                 GNy.getMarkers()), //! ou pas
-                //         child: Text(
-                //           // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
-                //           "${GNy.getAvailableFromCoordinates(marker.point)}",
-                //           style: TextStyle(color: Colors.white, fontSize: 10),
-                //         ),
-                //       )),
-                // ),
+                popupOptions: PopupOptions(
+                  popupSnap: PopupSnap.markerTop,
+                  popupController: PopupController(
+                      initiallySelectedMarkers:
+                          _markers), //!switch case ici + afficher les popup lors d'un certain zoom
+                  // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
+                  popupBuilder: (_, marker) => Container(
+                      alignment: Alignment.center,
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                          color: GNy.getColorFromCoordinates(marker.point),
+                          shape: BoxShape.circle),
+                      child: GestureDetector(
+                        onTap: () => PopupController(
+                            initiallySelectedMarkers: _markers), //! ou pas
+                        child: Text(
+                          // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
+                          "${GNy.getAvailableFromCoordinates(marker.point)}",
+                          style: TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                      )),
+                ),
                 builder: (context, markers) {
                   return Container(
                     alignment: Alignment.center,
@@ -246,24 +246,34 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
                 onPressed: () {
                   setState(() {
-                    selectedPoi == "veloStation" ? null : "veloStation";
+                    isBikeSelected = isBikeSelected ? false : true;
+                    setSelectedMarkers();
                   });
                 },
                 icon: Icon(Icons.pedal_bike_rounded)),
             IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
             IconButton(
-                onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
+                onPressed: () {
+                  setState(() {
+                    isParkingsSelected = isParkingsSelected ? false : true;
+                    setSelectedMarkers();
+                  });
+                },
+                icon: Icon(Icons.local_parking_outlined)),
             IconButton(
                 onPressed: () {
                   // // GNy().fetchParkings().then((resp) => setState(() {
                   // //       parkings = Provider.of<GNy>(context).getParkings();
                   // //       _markers.clear();
                   // //       _markers = getMarkers().toList();
-                  // //     }));
-                  gny(context, listen: false).fetchParkings().then(
-                        (value) => gny(context, listen: false).createMarkers(),
-                      );
-                  setState(() {});
+                  //   // //     }));
+                  //   gny(context, listen: false).fetchParkings().then(
+                  //         (value) => gny(context, listen: false).createMarkers(),
+                  //       );
+                  // },
+                  setState(() {
+                    print("setState");
+                  });
                 },
                 icon: Icon(Icons.data_exploration_sharp)),
           ],

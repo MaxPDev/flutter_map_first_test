@@ -60,7 +60,7 @@ class GNy extends ChangeNotifier {
   /**
    * Construit les markers depuis les coordonnées des objets parkings.
    */
-  void createMarkers() {
+  void createMarkers(context) {
     List<Marker> markers = [];
     for (var parking in _parkings) {
       markers.add(Marker(
