@@ -9,18 +9,17 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class Velostan extends ChangeNotifier {
-
   static final List<VelostanCarto> _stations = [];
   List<Marker> _stationsMarkers = [];
-  late VelostanSation _selectedStation; 
+  late VelostanSation _selectedStation;
 
   // Récupère markers des stations avec nom, adresse, coordonnées...
   static const String _uriCarto = 'http://www.velostanlib.fr/service/carto';
 
   // Récupère les infor pour une station
-  static const String _uriStation = 'http://www.velostanlib.fr/service/stationdetails/nancy/';
+  static const String _uriStation =
+      'http://www.velostanlib.fr/service/stationdetails/nancy/';
 
   Velostan() {
     print("velostan constructor");
@@ -29,8 +28,7 @@ class Velostan extends ChangeNotifier {
   /**
    * Récupérer les données depuis velostan
    */
-  Future<void> fetchVelostanCarto() async{
-
+  Future<void> fetchVelostanCarto() async {
     try {
       var uri = Uri.parse(_uriCarto);
       Response resp = await get(uri);
@@ -51,11 +49,9 @@ class Velostan extends ChangeNotifier {
 
       print(_stations.length);
       notifyListeners();
-
     } catch (e) {
       print('Caught error for velostan carto fetch : $e');
     }
-
   }
 
   List<VelostanCarto> getVelostanSations() {
@@ -63,7 +59,7 @@ class Velostan extends ChangeNotifier {
     return _stations;
   }
 
-      /**
+  /**
    * Construit les markers depuis les coordonnées des objets parkings.
    */
   void createMarkers() {
@@ -72,29 +68,24 @@ class Velostan extends ChangeNotifier {
       markers.add(Marker(
           //? attention point ne peux pas LatLng?, alors coordinates en required.
           //! Si coordonnées pas définit, plantage de toute l'appli ?
-          point: LatLng(
-              station.lat, station.lng),
+          point: LatLng(station.lat, station.lng),
           width: 30,
           height: 30,
           builder: (context) => Icon(
-                FontAwesomeIcons.pinterest,
+                FontAwesomeIcons.bicycle,
                 size: 30,
                 color: Colors.greenAccent,
-              )
-              
-        ));
+              )));
     }
     inspect(markers);
     _stationsMarkers.clear();
     _stationsMarkers = markers;
-    print("CreateMarker Velo ${_stationsMarkers.length}");
+    print("CreateMarker Stations Velo ${_stationsMarkers.length}");
     // notifyListeners();
   }
 
-    List<Marker> getStationsMarkers() {
-      print("getMarker");
+  List<Marker> getStationsMarkers() {
+    print("getMarker Stations Velo");
     return _stationsMarkers;
   }
-
-  
 }

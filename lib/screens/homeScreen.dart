@@ -25,7 +25,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   // final PopupController _popupController = PopupController(initiallySelectedMarkers: _markers);
   final MapController _mapController = MapController();
 
@@ -39,32 +38,35 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Marker> _markers = [];
 
   _initParking() {
-      gny(context, listen: false).fetchParkings()
-    .then((value) {
+    gny(context, listen: false).fetchParkings().then((value) {
       gny(context, listen: false).createMarkers();
     });
   }
 
   _initVelostanStations() {
-      velostan(context, listen: false).fetchVelostanCarto()
-    .then((value) {
+    velostan(context, listen: false).fetchVelostanCarto().then((value) {
       velostan(context, listen: false).createMarkers();
     });
   }
 
-  getSelectedMarkers()  {
-
+  List<Marker> getSelectedMarkers() {
     _markers.clear();
 
     switch (selectedPoi) {
       case "veloStation":
         // await _initVelostanStations();
-        _markers.addAll(velostan(context, listen: true).getStationsMarkers()); 
+        _markers.addAll(velostan(context, listen: true).getStationsMarkers());
+        print("here");
         break;
       default:
-      _markers.clear();
+        _markers.clear();
     }
-    if(isParkingsSelected) {_markers.addAll(gny(context, listen: true).getMarkers());}
+    if (isParkingsSelected) {
+      _markers.addAll(gny(context, listen: true).getParkingsMarkers());
+    }
+
+    print("getSelectedMarkers()");
+    inspect(_markers);
 
     return _markers;
   }
@@ -80,13 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // List<Marker> _markers = [];
   // List<Parking> parkings = [];
 
-
-
   @override
   initState() {
     // TODO: implement initState
     super.initState();
-
 
     // // seulement première fois
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -95,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
     //       Provider.of<GNy>(context, listen: false).createMarkers();
     //     });
     // //   _initProcess();
-
 
     // });
 
@@ -109,29 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
       _initVelostanStations();
     });
 
-  // Future.delayed(Duration.zero, () async {
-  //     Provider.of<GNy>(context, listen: false).fetchParkings()
-  //   .then((value) {
-  //     Provider.of<GNy>(context, listen: false).createMarkers();
-  //   });
-  // }); 
+    // Future.delayed(Duration.zero, () async {
+    //     Provider.of<GNy>(context, listen: false).fetchParkings()
+    //   .then((value) {
+    //     Provider.of<GNy>(context, listen: false).createMarkers();
+    //   });
+    // });
 
-  // void didChangeDependencies() {
-  //     Provider.of<GNy>(context, listen: false).fetchParkings()
-  //       .then((value) {
-  //         Provider.of<GNy>(context, listen: false).createMarkers();
-  //       });
+    // void didChangeDependencies() {
+    //     Provider.of<GNy>(context, listen: false).fetchParkings()
+    //       .then((value) {
+    //         Provider.of<GNy>(context, listen: false).createMarkers();
+    //       });
 
-  //   super.didChangeDependencies();
-  // }
-  //! adresse finding
+    //   super.didChangeDependencies();
+    // }
+    //! adresse finding
 
-  // if(mounted) {
-  //     Provider.of<GNy>(context, listen: false).fetchParkings()
-  //     .then((value) {
-  //        Provider.of<GNy>(context, listen: false).createMarkers();
-  //     });
-  // }
+    // if(mounted) {
+    //     Provider.of<GNy>(context, listen: false).fetchParkings()
+    //     .then((value) {
+    //        Provider.of<GNy>(context, listen: false).createMarkers();
+    //     });
+    // }
   }
 
   @override
@@ -140,105 +138,104 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("Nancy Stationnement Test"),
       ),
-      body: Container(
-        child: Consumer<GNy>(
-          builder: (context, GNy, child) {
-          return FlutterMap(
-            mapController: _mapController,
-        
-            // - `center`- Mention the center of the map, it will be the center when the map starts.
-            // - `bounds`- It can take a list of geo-coordinates and show them all when the map starts. If both bounds & center are provided, then bounds will take preference.
-            // - `zoom`- It is used to mention the initial zoom.
-            // - `swPanBoundary`/`nePanBoundary`- These are two geocoordinate points, which can be used to have interactivity constraints.
-            // - Callbacks such as `onTap`/`onLongPress`/`onPositionChanged` can also be used.
-        
-            options: MapOptions(
-                center: LatLng(48.6907359, 6.1825126),
-                zoom: 14.0,
-                // bounds: LatLngBounds(LatLng(48.6292781, 6.0974121), LatLng(48.7589048, 6.3322449)), //# affiche la zone en délimitant des coins
-                interactiveFlags: InteractiveFlag.pinchZoom |
-                    InteractiveFlag.drag, // not rotate
-                plugins: [
-                  MarkerClusterPlugin(),
-                ]),
-            layers: [
-              TileLayerOptions(
-                minZoom: 1,
-                maxZoom: 18,
-                backgroundColor: Colors.black,
-                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: ['a', 'b', 'c'],
-                // attributionBuilder: (_) {
-                //   return Text('Test');
-                // }
-              ),
-        
-              //# cluster. With cluster pakckage
-              MarkerClusterLayerOptions(
-                  maxClusterRadius: 120,
-                  disableClusteringAtZoom: 12,
-                  size: Size(50, 50),
-                  fitBoundsOptions: FitBoundsOptions(padding: EdgeInsets.all(50)),
-                  markers: getSelectedMarkers(),
-                  polygonOptions: PolygonOptions(
-                      borderColor: Colors.blueAccent,
-                      color: Colors.black12,
-                      borderStrokeWidth: 3),
-                  popupOptions: PopupOptions(
-                    popupSnap: PopupSnap.markerTop,
-                    popupController: PopupController(
-                        initiallySelectedMarkers:
-                            GNy.getMarkers()), //!switch case ici + afficher les popup lors d'un certain zoom
-                    // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
-                    popupBuilder: (_, marker) => Container(
-                        alignment: Alignment.center,
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                            color: GNy.getColorFromCoordinates(marker.point),
-                            shape: BoxShape.circle),
-                        child: GestureDetector(
-                          onTap: () => PopupController(
-                              initiallySelectedMarkers: GNy.getMarkers()), //! ou pas
-                          child: Text( // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
-                            "${GNy.getAvailableFromCoordinates(marker.point)}",
-                            style: TextStyle(color: Colors.white, fontSize: 10),
-                          ),
-                        )),
-                  ),
-                  builder: (context, _markers) {
-                    return Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 69, 66, 241),
-                          shape: BoxShape.circle),
-                      child: Text('${_markers.length}',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 233, 228, 228))),
-                    );
-                  }),
-        
-              //# defined up
-              // MarkerLayerOptions(markers: _markers),
-        
-              //# define here
-              //  MarkerLayerOptions(
-              //   markers: [
-              //     Marker(
-              //       width: 80.0,
-              //       height: 80.0,
-              //       point: LatLng(48.693, 6.187),
-              //       builder: (ctx) =>
-              //       Container(
-              //         child: FlutterLogo(),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-            ],
-          );
-        })
-      ),
+      body: Container(child: Consumer<GNy>(builder: (context, GNy, child) {
+        return FlutterMap(
+          mapController: _mapController,
+
+          // - `center`- Mention the center of the map, it will be the center when the map starts.
+          // - `bounds`- It can take a list of geo-coordinates and show them all when the map starts. If both bounds & center are provided, then bounds will take preference.
+          // - `zoom`- It is used to mention the initial zoom.
+          // - `swPanBoundary`/`nePanBoundary`- These are two geocoordinate points, which can be used to have interactivity constraints.
+          // - Callbacks such as `onTap`/`onLongPress`/`onPositionChanged` can also be used.
+
+          options: MapOptions(
+              center: LatLng(48.6907359, 6.1825126),
+              zoom: 14.0,
+              // bounds: LatLngBounds(LatLng(48.6292781, 6.0974121), LatLng(48.7589048, 6.3322449)), //# affiche la zone en délimitant des coins
+              interactiveFlags: InteractiveFlag.pinchZoom |
+                  InteractiveFlag.drag, // not rotate
+              plugins: [
+                MarkerClusterPlugin(),
+              ]),
+          layers: [
+            TileLayerOptions(
+              minZoom: 1,
+              maxZoom: 18,
+              backgroundColor: Colors.black,
+              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+              subdomains: ['a', 'b', 'c'],
+              // attributionBuilder: (_) {
+              //   return Text('Test');
+              // }
+            ),
+
+            //# cluster. With cluster pakckage
+            MarkerClusterLayerOptions(
+                maxClusterRadius: 120,
+                disableClusteringAtZoom: 12,
+                size: Size(50, 50),
+                fitBoundsOptions: FitBoundsOptions(padding: EdgeInsets.all(50)),
+                markers: getSelectedMarkers(),
+                polygonOptions: PolygonOptions(
+                    borderColor: Colors.blueAccent,
+                    color: Colors.black12,
+                    borderStrokeWidth: 3),
+                // popupOptions: PopupOptions(
+                //   popupSnap: PopupSnap.markerTop,
+                //   popupController: PopupController(
+                //       initiallySelectedMarkers: GNy
+                //           .getMarkers()), //!switch case ici + afficher les popup lors d'un certain zoom
+                //   // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
+                //   popupBuilder: (_, marker) => Container(
+                //       alignment: Alignment.center,
+                //       height: 30,
+                //       width: 30,
+                //       decoration: BoxDecoration(
+                //           color: GNy.getColorFromCoordinates(marker.point),
+                //           shape: BoxShape.circle),
+                //       child: GestureDetector(
+                //         onTap: () => PopupController(
+                //             initiallySelectedMarkers:
+                //                 GNy.getMarkers()), //! ou pas
+                //         child: Text(
+                //           // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
+                //           "${GNy.getAvailableFromCoordinates(marker.point)}",
+                //           style: TextStyle(color: Colors.white, fontSize: 10),
+                //         ),
+                //       )),
+                // ),
+                builder: (context, markers) {
+                  return Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 69, 66, 241),
+                        shape: BoxShape.circle),
+                    child: Text('${markers.length}',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 233, 228, 228))),
+                  );
+                }),
+
+            //# defined up
+            // MarkerLayerOptions(markers: _markers),
+
+            //# define here
+            //  MarkerLayerOptions(
+            //   markers: [
+            //     Marker(
+            //       width: 80.0,
+            //       height: 80.0,
+            //       point: LatLng(48.693, 6.187),
+            //       builder: (ctx) =>
+            //       Container(
+            //         child: FlutterLogo(),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+          ],
+        );
+      })),
       bottomNavigationBar: BottomAppBar(
         color: Color.fromARGB(235, 241, 238, 49),
         child: Row(
@@ -246,13 +243,13 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             IconButton(
                 onPressed: () {}, icon: Icon(Icons.directions_walk_outlined)),
-            IconButton(onPressed: () {
-              setState(() {
-                selectedPoi == "veloStation" ? null : "veloStation";
-               
-              });
-
-            }, icon: Icon(Icons.pedal_bike_rounded)),
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    selectedPoi == "veloStation" ? null : "veloStation";
+                  });
+                },
+                icon: Icon(Icons.pedal_bike_rounded)),
             IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
             IconButton(
                 onPressed: () {}, icon: Icon(Icons.local_parking_outlined)),
@@ -263,9 +260,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   // //       _markers.clear();
                   // //       _markers = getMarkers().toList();
                   // //     }));
-                  gny(context, listen: false).fetchParkings().then((value) => 
-                  gny(context, listen: false).createMarkers(),);
-                   setState(() {});
+                  gny(context, listen: false).fetchParkings().then(
+                        (value) => gny(context, listen: false).createMarkers(),
+                      );
+                  setState(() {});
                 },
                 icon: Icon(Icons.data_exploration_sharp)),
           ],

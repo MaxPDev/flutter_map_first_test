@@ -57,7 +57,7 @@ class GNy extends ChangeNotifier {
   //   // inspect(_markers);
   // }
 
-    /**
+  /**
    * Construit les markers depuis les coordonnées des objets parkings.
    */
   void createMarkers() {
@@ -74,22 +74,19 @@ class GNy extends ChangeNotifier {
                 FontAwesomeIcons.squareParking,
                 size: 30,
                 color: Colors.blueAccent,
-              )
-              
-        ));
+              )));
     }
     inspect(markers);
     _markers.clear();
     _markers = markers;
-    print("CreateMarker ${_markers.length}");
+    print("CreateMarker Parking ${_markers.length}");
     // notifyListeners();
   }
 
-    List<Marker> getMarkers() {
-      print("getMarker ${_markers.length}");
+  List<Marker> getParkingsMarkers() {
+    print("getMarker Parking ${_markers.length}");
     return _markers;
   }
-
 
   /**
    * Récupère et rénvoie la propriété available depuis les coordonnées
@@ -141,9 +138,6 @@ class GNy extends ChangeNotifier {
         }
     }
   }
-
-
-
 
 // Récupérer
 }
