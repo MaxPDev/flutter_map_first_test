@@ -14,22 +14,22 @@ import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 
 import 'dart:developer';
 
-void main() {
-  runApp(
-    MultiProvider(
+import 'package:sqflite/sqflite.dart';
+
+void main() async {
+  // await deleteDatabase('parkings.db');
+  runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => GNy(),
-          ),
+        ),
         ChangeNotifierProvider(
           create: (context) => Velostan(),
         )
       ],
       child: MaterialApp(
         home: MapTest(),
-      )
-    )
-  );
+      )));
 }
 
 class MapTest extends StatefulWidget {
@@ -59,10 +59,10 @@ class _MapTestState extends State<MapTest> {
     //             if (snapshot.hasError) {
     //               return Text('Main Error: ${snapshot.error}');
     //               // If got data
-    //             } 
+    //             }
     //             // In this case, future methode is void, so homeScreen
     //             // = hasData()
-    //             return HomeScreen();  
+    //             return HomeScreen();
     //         }
     //       )
     //     ),
@@ -108,23 +108,22 @@ class _MapTestState extends State<MapTest> {
 //       }
 //     }
 
-
 //# Version FuturBuilder 3 (ok)
-          // child: FutureBuilder(
-          //     future: GNy().fetchParkings(),
-          //     builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-          //       if (snapshot.connectionState == ConnectionState.waiting) {
-          //         return CenteredCircularProgressIdicator();
-          //       }
-          //       if (snapshot.hasError) {
-          //         return Text('Main Error: ${snapshot.error}');
-          //         // If got data
-          //       } 
-          //       // In this case, future methode is void, so homeScreen
-          //       // = hasData()
-          //       return HomeScreen();  
-          //   }
-          // )
+// child: FutureBuilder(
+//     future: GNy().fetchParkings(),
+//     builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+//       if (snapshot.connectionState == ConnectionState.waiting) {
+//         return CenteredCircularProgressIdicator();
+//       }
+//       if (snapshot.hasError) {
+//         return Text('Main Error: ${snapshot.error}');
+//         // If got data
+//       }
+//       // In this case, future methode is void, so homeScreen
+//       // = hasData()
+//       return HomeScreen();
+//   }
+// )
 
 //     // one case left : ConnectionState.waiting
 //     //# can't have a if, we need a return whatever

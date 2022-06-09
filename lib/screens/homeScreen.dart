@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:fr_piscadev_osmtest/data/parking_database.dart';
 import 'package:fr_piscadev_osmtest/services/velostan.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -38,9 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Marker> _markers = [];
   // List<Marker> _parkingsMarkers = [];
 
-  _initParking(context) {
+  _initParking() {
     gny(context, listen: false).fetchParkings().then((value) {
-      gny(context, listen: false).createMarkers(context);
+      gny(context, listen: false).createMarkers();
       setSelectedMarkers();
     });
   }
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (this.isParkingsSelected) {
-      print(isParkingsSelected);
+      // print(isParkingsSelected);
       _markers.addAll(gny(context, listen: false).getParkingsMarkers());
     }
 
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
       //     Provider.of<GNy>(context, listen: false).createMarkers();
       //   });
 
-      _initParking(context);
+      _initParking();
       _initVelostanStations();
       // _parkingsMarkers = gny(context, listen: false).getParkingsMarkers();
     });
@@ -131,6 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
     //        Provider.of<GNy>(context, listen: false).createMarkers();
     //     });
     // }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    ParkingDatabase.instance.close();
+    super.dispose();
   }
 
   @override

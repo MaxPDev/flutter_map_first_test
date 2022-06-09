@@ -47,7 +47,7 @@ class Velostan extends ChangeNotifier {
         _stations.add(VelostanCarto.fromJson(station));
       }
 
-      print(_stations.length);
+      // print(_stations.length);
       notifyListeners();
     } catch (e) {
       print('Caught error for velostan carto fetch : $e');
@@ -55,7 +55,7 @@ class Velostan extends ChangeNotifier {
   }
 
   List<VelostanCarto> getVelostanSations() {
-    print("getVelostanStation");
+    // print("getVelostanStation");
     return _stations;
   }
 
@@ -80,12 +80,12 @@ class Velostan extends ChangeNotifier {
     inspect(markers);
     _stationsMarkers.clear();
     _stationsMarkers = markers;
-    print("CreateMarker Stations Velo ${_stationsMarkers.length}");
+    // print("CreateMarker Stations Velo ${_stationsMarkers.length}");
     // notifyListeners();
   }
 
   List<Marker> getStationsMarkers() {
-    print("getMarker Stations Velo");
+    // print("getMarker Stations Velo");
     return _stationsMarkers;
   }
 }

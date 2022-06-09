@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fr_piscadev_osmtest/data/parking_database.dart';
 import 'package:http/http.dart';
 import 'dart:convert'; // to user jsonDecode
 import 'package:fr_piscadev_osmtest/models/parking.dart';
@@ -30,16 +31,32 @@ class GNy extends ChangeNotifier {
       // List<Parking> parkings = data.map((data) => Parking.fromJson(data)).toList();
       // parkings = Parking.fromJson(jsonDecode(resp.body));
       // print(data);
+      await ParkingDatabase.instance.deleteDatabase('parkings.db');
       _parkings.clear();
       data.forEach((key, value) {
-        _parkings.add(Parking.fromJson(data[key]));
+        _parkings.add(Parking.fromAPIJson(data[key]));
       });
-
+      await parkingsToDatabase();
+      var test = await ParkingDatabase.instance.getAllParking;
+      inspect(test);
       print("fetchParking ${_parkings.length}");
       notifyListeners();
     } catch (e) {
       print('caught error for GNy.fetchParkings() : $e');
     }
+  }
+
+  Future parkingsToDatabase() async {
+    int counter = 0;
+    _parkings.forEach((parking) async {
+      var id = await ParkingDatabase.instance.createParking(parking);
+      // print('ID du parking ajouté dans la bd :');
+      // inspect(id);
+      String id_str = id.toString();
+      var p = await ParkingDatabase.instance.getParking("mgn.114");
+      inspect(p);
+      // print(p);
+    });
   }
 
   List<Parking> getParkings() {
@@ -60,7 +77,7 @@ class GNy extends ChangeNotifier {
   /**
    * Construit les markers depuis les coordonnées des objets parkings.
    */
-  void createMarkers(context) {
+  void createMarkers() {
     List<Marker> markers = [];
     for (var parking in _parkings) {
       markers.add(Marker(
@@ -76,15 +93,15 @@ class GNy extends ChangeNotifier {
                 color: Colors.blueAccent,
               )));
     }
-    inspect(markers);
+    // inspect(markers);
     _markers.clear();
     _markers = markers;
-    print("CreateMarker Parking ${_markers.length}");
+    // print("CreateMarker Parking ${_markers.length}");
     // notifyListeners();
   }
 
   List<Marker> getParkingsMarkers() {
-    print("getMarker Parking ${_markers.length}");
+    // print("getMarker Parking ${_markers.length}");
     return _markers;
   }
 

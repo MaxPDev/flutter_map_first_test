@@ -42,6 +42,8 @@ dependencies:
   provider: ^6.0.3
   xml: ^6.1.0
   xml2json: ^5.3.3
+  sqflite: ^2.0.2+1
+  path: ^1.8.1
 
 dev_dependencies:
   flutter_test:
