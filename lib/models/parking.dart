@@ -26,10 +26,12 @@ class Parking {
   final String? name;
   final List<double> geometryCoordinates;
   final dynamic capacity;
-  final int? mgnAvailable;
-  final String? uiColorEn;
+  int? mgnAvailable;
+  String? uiColorEn;
 
-  const Parking(
+  //! pas const pour pas être obligé de mettre final aux attribut,
+  //! pour pouvoir les changer
+  Parking(
       {this.id,
       this.osmId,
       this.name,
@@ -91,6 +93,8 @@ class Parking {
       uiColorEn: json["uiColorEn"] == null ? null : json["uiColorEn"],
     );
   }
+
+  
 
   //! jsEncode / jsDecode dans geometryCoordinate pour les list
 

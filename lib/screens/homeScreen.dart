@@ -308,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   //       );
                   // },
                   setState(() {
-                    print("setState");
+                     gny(context, listen: false).fetchDynamicData();
                   });
                 },
                 icon: Icon(Icons.data_exploration_sharp)),

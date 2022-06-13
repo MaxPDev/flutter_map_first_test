@@ -15,6 +15,8 @@ class GNy extends ChangeNotifier {
   static List<Parking> _parkings = [];
   List<Marker> _markers = [];
 
+  String uriGny = 'https://go.g-ny.org/stationnement?output=';
+
   GNy() {
     print("gny constructor");
   }
@@ -25,7 +27,7 @@ class GNy extends ChangeNotifier {
  */
   Future<void> fetchParkings() async {
     try {
-      var uri = Uri.parse('https://go.g-ny.org/stationnement?output=json');
+      var uri = Uri.parse('$uriGny' + 'json');
       Response resp = await get(uri);
 
       Map<String, dynamic> data = jsonDecode(resp.body);
@@ -57,6 +59,27 @@ class GNy extends ChangeNotifier {
       print(id_str);
       // print(p);
     });
+  }
+
+  //! Although both map and forEach looks similar syntactically, 
+  //! the key difference between these two is that the map function returns the object after iteration.
+
+  Future fetchDynamicData() async {
+    var uri = Uri.parse('$uriGny' + 'hot');
+    Response resp = await get(uri);
+    Map<String, dynamic> data = jsonDecode(resp.body);
+    
+    // print(data);
+    _parkings.forEach((parking) { 
+      data.forEach((key, value) {
+        if(parking.id == key) {
+          // print('${parking.id} $key ${data[key]["mgn:available"]}');
+          // parking.copyWith(mgnAvailable: data[key]["mgn:available"]);
+          parking.mgnAvailable = data[key]["mgn:available"];
+          inspect(parking);
+        }
+      });
+     });
   }
 
   List<Parking> getParkings() {
