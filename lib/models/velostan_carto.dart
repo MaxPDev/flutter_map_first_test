@@ -1,3 +1,27 @@
+final String tableParkings = "velostan";
+
+class VelostanFields {
+  static final List<String> values = [
+    id,
+    name,
+    address,
+    lat,
+    lng,
+    open,
+    bonus,
+  ];
+
+  static final String id = "_id";
+  static final String name = "name";
+  static final String address = "address";
+  static final String lat = "lat";
+  static final String lng = "lng";
+  static final String open = "open";
+  static final String bonus = "bonus";
+  
+}
+
+
 class VelostanCarto {
   
   // essaie de tout en required. 
