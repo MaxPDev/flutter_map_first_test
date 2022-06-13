@@ -11,7 +11,8 @@ import 'package:latlong2/latlong.dart';
 
 class GNy extends ChangeNotifier {
 // late Parking parking; // static surtout pour fichier data ?
-  static final List<Parking> _parkings = [];
+  static List<Parking> _parkingsFromAPI = [];
+  static List<Parking> _parkings = [];
   List<Marker> _markers = [];
 
   GNy() {
@@ -32,14 +33,13 @@ class GNy extends ChangeNotifier {
       // parkings = Parking.fromJson(jsonDecode(resp.body));
       // print(data);
       await ParkingDatabase.instance.deleteDatabase('parkings.db');
+      _parkingsFromAPI.clear();
       _parkings.clear();
       data.forEach((key, value) {
-        _parkings.add(Parking.fromAPIJson(data[key]));
+        _parkingsFromAPI.add(Parking.fromAPIJson(data[key]));
       });
       await parkingsToDatabase();
-      List<Parking> test = await ParkingDatabase.instance.getAllParking();
-      inspect(test);
-      print("parkings from DB ${test.length}");
+      _parkings = await ParkingDatabase.instance.getAllParking();
       print("fetchParking ${_parkings.length}");
       notifyListeners();
     } catch (e) {
@@ -49,7 +49,7 @@ class GNy extends ChangeNotifier {
 
   Future parkingsToDatabase() async {
     int counter = 0;
-    _parkings.forEach((parking) async {
+    _parkingsFromAPI.forEach((parking) async {
       var id = await ParkingDatabase.instance.createParking(parking);
       // print('ID du parking ajouté dans la bd :');
       // inspect(id);
@@ -57,10 +57,6 @@ class GNy extends ChangeNotifier {
       print(id_str);
       // print(p);
     });
-    // print("pTDB");
-    //   Parking p = await ParkingDatabase.instance.getParking("mgn.114");
-    //   inspect(p);
-    //   print("pTDB");
   }
 
   List<Parking> getParkings() {
