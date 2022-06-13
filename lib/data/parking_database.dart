@@ -37,8 +37,7 @@ CREATE TABLE $tableParkings (
   ${ParkingFields.osmId} $integerType,
   ${ParkingFields.name} $textType,
   ${ParkingFields.geometryCoordinates} $textType,
-  ${ParkingFields.capacity} $textType,
-  ${ParkingFields.uiColorEn} $textType
+  ${ParkingFields.capacity} $textType
 
 )
 ''');

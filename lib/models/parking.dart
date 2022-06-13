@@ -9,7 +9,6 @@ class ParkingFields {
     name,
     geometryCoordinates,
     capacity,
-    uiColorEn
   ];
 
   static final String id = "_id";
@@ -17,7 +16,6 @@ class ParkingFields {
   static final String name = "name";
   static final String geometryCoordinates = " geometryCoordinates";
   static final String capacity = "capacity";
-  static final String uiColorEn = "uiColorEn";
 }
 
 class Parking {
@@ -90,7 +88,7 @@ class Parking {
       capacity: json["capacity"] == null ? null : json["capacity"],
       // mgnAvailable:
           // json["mgn:available"] == null ? null : json["mgn:available"],
-      uiColorEn: json["uiColorEn"] == null ? null : json["uiColorEn"],
+      // uiColorEn: json["uiColorEn"] == null ? null : json["uisColorEn"],
     );
   }
 
@@ -106,6 +104,6 @@ class Parking {
         ParkingFields.geometryCoordinates: jsonEncode(geometryCoordinates),
         // ParkingFields.geometryCoordinates: jsonEncode(geometryCoordinates),
         ParkingFields.capacity: capacity,
-        ParkingFields.uiColorEn: uiColorEn
+        // ParkingFields.uiColorEn: uiColorEn
       };
 }

@@ -76,6 +76,7 @@ class GNy extends ChangeNotifier {
           // print('${parking.id} $key ${data[key]["mgn:available"]}');
           // parking.copyWith(mgnAvailable: data[key]["mgn:available"]);
           parking.mgnAvailable = data[key]["mgn:available"];
+          parking.uiColorEn = data[key]["ui:color_en"];
           inspect(parking);
         }
       });

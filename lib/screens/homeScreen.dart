@@ -39,10 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Marker> _markers = [];
   // List<Marker> _parkingsMarkers = [];
 
+  /**
+   * Charge les parkings, les données dynamiques, et la créations des markers
+   */
   _initParking() {
     gny(context, listen: false).fetchParkings().then((value) {
-      gny(context, listen: false).createMarkers();
-      setSelectedMarkers();
+      gny(context, listen: false).fetchDynamicData().then((value) {
+        gny(context, listen: false).createMarkers();
+        setSelectedMarkers();
+      });
+
     });
   }
 
