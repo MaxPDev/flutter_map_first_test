@@ -37,8 +37,9 @@ class GNy extends ChangeNotifier {
         _parkings.add(Parking.fromAPIJson(data[key]));
       });
       await parkingsToDatabase();
-      var test = await ParkingDatabase.instance.getAllParking;
+      List<Parking> test = await ParkingDatabase.instance.getAllParking();
       inspect(test);
+      print("parkings from DB ${test.length}");
       print("fetchParking ${_parkings.length}");
       notifyListeners();
     } catch (e) {
@@ -53,10 +54,13 @@ class GNy extends ChangeNotifier {
       // print('ID du parking ajouté dans la bd :');
       // inspect(id);
       String id_str = id.toString();
-      var p = await ParkingDatabase.instance.getParking("mgn.114");
-      inspect(p);
+      print(id_str);
       // print(p);
     });
+    // print("pTDB");
+    //   Parking p = await ParkingDatabase.instance.getParking("mgn.114");
+    //   inspect(p);
+    //   print("pTDB");
   }
 
   List<Parking> getParkings() {

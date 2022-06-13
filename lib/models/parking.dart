@@ -74,21 +74,25 @@ class Parking {
     );
   }
 
-  // // static from json to database without available
-  // factory Parking.fromDBJson(Map<String, dynamic> json) {
-  //   return Parking(
-  //     id: json["id"] == null ? null : json["id"],
-  //     osmId: json["osm.id"] == null ? null : json["osm.id"],
-  //     name: json["name"] == null ? null : json["name"],
-  //     geometryCoordinates: List<double>.from(
-  //         json["geometry.coordinates"].map((x) => x.toDouble())),
-  //     // geometryCoordinates: json["geometry.coordinates"] == null ? null : List<double>.from(json["geometry.coordinates"].map((x) => x.toDouble())),
-  //     capacity: json["capacity"] == null ? null : json["capacity"],
-  //     mgnAvailable:
-  //         json["mgn:available"] == null ? null : json["mgn:available"],
-  //     uiColorEn: json["ui:color_en"] == null ? null : json["ui:color_en"],
-  //   );
-  // }
+  // static from json to database without available
+  factory Parking.fromDBJson(Map<String, dynamic> json) {
+    return Parking(
+      id: json["_id"] == null ? null : json["_id"],
+      osmId: json["osmId"] == null ? null : json["osmId"],
+      name: json["name"] == null ? null : json["name"],
+      // geometryCoordinates: List<double>.from(
+      //     json["geometryCoordinates"].map((x) => x.toDouble())),
+      geometryCoordinates: List<double>.from(
+          jsonDecode(json["geometryCoordinates"]).map((x) => x.toDouble())),
+      // geometryCoordinates: json["geometry.coordinates"] == null ? null : List<double>.from(json["geometry.coordinates"].map((x) => x.toDouble())),
+      capacity: json["capacity"] == null ? null : json["capacity"],
+      // mgnAvailable:
+          // json["mgn:available"] == null ? null : json["mgn:available"],
+      uiColorEn: json["uiColorEn"] == null ? null : json["uiColorEn"],
+    );
+  }
+
+  //! jsEncode / jsDecode dans geometryCoordinate pour les list
 
   // for database. Available not useful
   Map<String, Object?> toJson() => {
@@ -96,6 +100,7 @@ class Parking {
         ParkingFields.osmId: osmId,
         ParkingFields.name: name,
         ParkingFields.geometryCoordinates: jsonEncode(geometryCoordinates),
+        // ParkingFields.geometryCoordinates: jsonEncode(geometryCoordinates),
         ParkingFields.capacity: capacity,
         ParkingFields.uiColorEn: uiColorEn
       };

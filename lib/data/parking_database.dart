@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -46,7 +48,8 @@ CREATE TABLE $tableParkings (
     final db = await instance.database;
 
     final idBack = await db.insert(tableParkings, parking.toJson());
-    print("retour de create : $idBack");
+    // print("retour de create : $idBack");
+    // print(parking.toJson());
     // return getParking(parking.id!);
     return idBack;
   }
@@ -62,7 +65,7 @@ CREATE TABLE $tableParkings (
     );
 
     if (maps.isNotEmpty) {
-      return Parking.fromAPIJson(maps.first);
+      return Parking.fromDBJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
@@ -75,7 +78,7 @@ CREATE TABLE $tableParkings (
 
     final result = await db.query(tableParkings);
 
-    return result.map((json) => Parking.fromAPIJson(json)).toList();
+    return result.map((json) => Parking.fromDBJson(json)).toList();
   }
 
   Future<int> update(Parking parking) async {
