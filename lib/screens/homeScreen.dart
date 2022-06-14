@@ -13,6 +13,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 import 'package:fr_piscadev_osmtest/services/velostan.dart';
+import 'package:fr_piscadev_osmtest/widgets/parkingPopup.dart';
+import 'package:fr_piscadev_osmtest/widgets/veloPopup.dart';
 
 import 'dart:developer';
 
@@ -37,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isBikeSelected = false;
 
   List<Marker> _markers = [];
-  // List<Marker> _parkingsMarkers = [];
+  List<Marker> _parkingsMarkers = [];
+  List<Marker> _veloMarkers = [];
 
   /**
    * Charge les parkings, les données dynamiques, et la créations des markers
@@ -48,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
         gny(context, listen: false).createMarkers();
         setSelectedMarkers();
       });
-
     });
   }
 
@@ -58,11 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  //todo event. gérer la liste des marker et leurs MAJ autrement. Choisir la solution des variables ?
   void setSelectedMarkers() {
     _markers.clear();
 
     if (this.isBikeSelected) {
       _markers.addAll(velostan(context, listen: false).getStationsMarkers());
+      _veloMarkers = velostan(context, listen: false).getStationsMarkers();
     } else {
       _markers.clear();
     }
@@ -70,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (this.isParkingsSelected) {
       // print(isParkingsSelected);
       _markers.addAll(gny(context, listen: false).getParkingsMarkers());
+      _parkingsMarkers = gny(context, listen: false).getParkingsMarkers();
     }
 
     print("setSelectedMarkers()");
@@ -197,51 +202,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderStrokeWidth: 3),
                 popupOptions: PopupOptions(
                     popupSnap: PopupSnap.markerTop,
-                    popupController: isBikeSelected
-                        ? PopupController()
-                        : PopupController(
-                            initiallySelectedMarkers:
-                                _markers), //!switch case ici + afficher les popup lors d'un certain zoom
+                    popupController: isParkingsSelected
+                        ? PopupController(
+                            initiallySelectedMarkers: _parkingsMarkers)
+                        : PopupController(), //!switch case ici + afficher les popup lors d'un certain zoom
                     // popupAnimation: PopupAnimation.fade(duration: Duration(milliseconds: 700), curve: Curves.ease), //! dosn't work with controller. Who cares
                     popupBuilder: (_, marker) {
                       if (isParkingsSelected && !isBikeSelected) {
-                        return Container(
-                            alignment: Alignment.center,
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                                color:
-                                    GNy.getColorFromCoordinates(marker.point),
-                                shape: BoxShape.circle),
-                            child: GestureDetector(
-                              onTap: () => PopupController(
-                                  initiallySelectedMarkers:
-                                      _markers), //! ou pas
-                              child: Text(
-                                // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
-                                "${GNy.getAvailableFromCoordinates(marker.point)}",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 10),
-                              ),
-                            ));
-                      } else if (isBikeSelected) {
-                        return Container(
-                            alignment: Alignment.center,
-                            height: 30,
-                            width: 30,
-                            decoration: BoxDecoration(
-                                color:
-                                    GNy.getColorFromCoordinates(marker.point),
-                                shape: BoxShape.circle),
-                            child: GestureDetector(
-                              onTap: () => PopupController(), //! ou pas
-                              child: Text(
-                                // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
-                                "widget velo to do",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 10),
-                              ),
-                            ));
+                        return ParkingPopup(markers: _markers, marker: marker);
+                      } else if (isBikeSelected && !isParkingsSelected) {
+                        return veloPopup(veloMarkers: _veloMarkers);
                       } else {
                         return Text("prévoir ce cas");
                       }
@@ -314,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   //       );
                   // },
                   setState(() {
-                     gny(context, listen: false).fetchDynamicData();
+                    gny(context, listen: false).fetchDynamicData();
                   });
                 },
                 icon: Icon(Icons.data_exploration_sharp)),

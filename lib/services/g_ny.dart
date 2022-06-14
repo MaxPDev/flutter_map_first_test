@@ -132,7 +132,7 @@ class GNy extends ChangeNotifier {
    * Récupère et rénvoie la propriété available depuis les coordonnées
    */
   //! Contournement
-  int? getAvailableFromCoordinates(LatLng point) {
+  static int? getAvailableFromCoordinates(LatLng point) {
     Parking parkingPopup = _parkings.firstWhere((parking) =>
         parking.geometryCoordinates[1] == point.latitude &&
         parking.geometryCoordinates[0] == point.longitude);
@@ -144,7 +144,7 @@ class GNy extends ChangeNotifier {
    * Récupère et rénvoie la propriété uiColor_en depuis les coordonnées
    */
   //! Contournement
-  Color? getColorFromCoordinates(LatLng point) {
+  static Color? getColorFromCoordinates(LatLng point) {
     Parking parkingPopup = _parkings.firstWhere((parking) =>
         parking.geometryCoordinates[1] == point.latitude &&
         parking.geometryCoordinates[0] == point.longitude);
