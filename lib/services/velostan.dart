@@ -62,6 +62,24 @@ class Velostan extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchVelostanStation(String stationID) async {
+    try {
+      var uri = Uri.parse('$_uriStation' + '$stationID');
+      Response resp = await get(uri);
+
+      // Conversion xml en json
+      final Xml2Json xml2json = Xml2Json();
+      xml2json.parse(resp.body);
+      String respJson = xml2json.toBadgerfish();
+
+      // De Json à Map
+      Map<String, dynamic> data = jsonDecode(respJson);
+      print(data['station']);
+    } catch (e) {
+      print('Caught error for velostan station fetch : $e');
+    }
+  }
+
   Future velostanCartoToDatabase() async {
     _stationsFromAPI.forEach((VelostanCarto) async {
       // createVelostanCarto : void ? ou test ?
