@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:fr_piscadev_osmtest/data/velostan_database.dart';
 import 'package:http/http.dart';
 import 'package:xml2json/xml2json.dart';
 import 'dart:convert';
@@ -10,7 +11,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Velostan extends ChangeNotifier {
-  static final List<VelostanCarto> _stations = [];
+
+  // Contrairement à Parking, peut-être qu'une seule variable est suffisante
+  // Je laisse deux au cas (switch avec JC Decaux)
+  static List<VelostanCarto> _stationsFromAPI = [];
+  static List<VelostanCarto> _stations = [];
   List<Marker> _stationsMarkers = [];
   late VelostanSation _selectedStation;
 
@@ -41,17 +46,31 @@ class Velostan extends ChangeNotifier {
       // De Json à Map
       Map<String, dynamic> data = jsonDecode(respJson);
 
+      await VelostanDatabase.instance.deleteDatabase('velostan.db');
       // Nettoyage de _stations, et remplissage de la liste avec les objets
       _stations.clear();
+      _stationsFromAPI.clear();
       for (var station in data['carto']['markers']['marker']) {
-        _stations.add(VelostanCarto.fromJson(station));
+        _stationsFromAPI.add(VelostanCarto.fromAPIJson(station));
       }
-
-      // print(_stations.length);
+      await velostanCartoToDatabase();
+      _stations = await VelostanDatabase.instance.getAllVelostanCarto();
+      print("fetchVelostanCarto + intro DB : ${_stations.length}");
       notifyListeners();
     } catch (e) {
       print('Caught error for velostan carto fetch : $e');
     }
+  }
+
+  Future velostanCartoToDatabase() async {
+    _stationsFromAPI.forEach((VelostanCarto) async {
+      // createVelostanCarto : void ? ou test ?
+      var id = await VelostanDatabase.instance.createVelostanCarto(VelostanCarto);
+      // print(id.toStringKC());
+    });
+    VelostanCarto test = await VelostanDatabase.instance.getVelostanCarto("27");
+    inspect(test);
+
   }
 
   List<VelostanCarto> getVelostanSations() {

@@ -45,3 +45,14 @@ Here are 2 common ways this could go wrong:
     List<dynamic> data = map["dataKey"];
     print(data[0]["name"]);
 
+
+    ---------------------------------------------------------------
+
+    flutter: Caught error for velostan carto fetch : type 'Null' is not a subtype of type 'String' in type cast
+
+    !
+
+    type 'double' is not a subtype of type 'String'
+
+    double.parse(val.toString());
+

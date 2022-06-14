@@ -50,13 +50,12 @@ class GNy extends ChangeNotifier {
   }
 
   Future parkingsToDatabase() async {
-    int counter = 0;
     _parkingsFromAPI.forEach((parking) async {
       var id = await ParkingDatabase.instance.createParking(parking);
       // print('ID du parking ajouté dans la bd :');
       // inspect(id);
-      String id_str = id.toString();
-      print(id_str);
+      // String id_str = id.toString();
+      // print(id_str);
       // print(p);
     });
   }
@@ -77,7 +76,7 @@ class GNy extends ChangeNotifier {
           // parking.copyWith(mgnAvailable: data[key]["mgn:available"]);
           parking.mgnAvailable = data[key]["mgn:available"];
           parking.uiColorEn = data[key]["ui:color_en"];
-          inspect(parking);
+          // inspect(parking);
         }
       });
      });

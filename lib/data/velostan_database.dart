@@ -33,63 +33,64 @@ class VelostanDatabase {
     final realType = 'REAL';
 
     await db.execute('''
-CREATE TABLE $tableParkings (
+CREATE TABLE $tableVelostan (
   ${VelostanFields.id} $idType,
   ${VelostanFields.name} $textType,
   ${VelostanFields.address} $textType,
   ${VelostanFields.lat} $realType,
   ${VelostanFields.lng} $realType,
   ${VelostanFields.open} $boolType,
-  ${VelostanFields.bonus} $boolType,
+  ${VelostanFields.bonus} $boolType
 )
 ''');
   }
 
-  Future<int> createParking(Parking parking) async {
+  Future<int> createVelostanCarto(VelostanCarto velostanCarto) async {
     final db = await instance.database;
 
-    final idBack = await db.insert(tableParkings, parking.toJson());
+    final idBack = await db.insert(tableVelostan, velostanCarto.toJson());
     // print("retour de create : $idBack");
     // print(parking.toJson());
     // return getParking(parking.id!);
     return idBack;
   }
 
-  Future<Parking> getParking(String id) async {
+  Future<VelostanCarto> getVelostanCarto(String id) async {
     final db = await instance.database;
 
     final maps = await db.query(
-      tableParkings,
-      columns: ParkingFields.values,
-      where: '${ParkingFields.id} = ?',
+      tableVelostan,
+      columns: VelostanFields.values,
+      where: '${VelostanFields.id} = ?',
       whereArgs: [id],
     );
 
     if (maps.isNotEmpty) {
-      return Parking.fromDBJson(maps.first);
+      inspect(maps);
+      return VelostanCarto.fromDBJson(maps.first);
     } else {
       throw Exception('ID $id not found');
     }
   }
 
-  Future<List<Parking>> getAllParking() async {
+  Future<List<VelostanCarto>> getAllVelostanCarto() async {
     final db = await instance.database;
 
     // final orderBy = '${ParkingFields.id} ASC';
 
-    final result = await db.query(tableParkings);
+    final result = await db.query(tableVelostan);
 
-    return result.map((json) => Parking.fromDBJson(json)).toList();
+    return result.map((json) => VelostanCarto.fromDBJson(json)).toList();
   }
 
-  Future<int> update(Parking parking) async {
+  Future<int> update(VelostanCarto velostanCarto) async {
     final db = await instance.database;
 
     return db.update(
-      tableParkings,
-      parking.toJson(),
-      where: '${ParkingFields.id} = ?',
-      whereArgs: [parking.id],
+      tableVelostan,
+      velostanCarto.toJson(),
+      where: '${VelostanFields.id} = ?',
+      whereArgs: [velostanCarto.id],
     );
   }
 
@@ -97,8 +98,8 @@ CREATE TABLE $tableParkings (
     final db = await instance.database;
 
     return await db.delete(
-      tableParkings,
-      where: '${ParkingFields.id} = ?',
+      tableVelostan,
+      where: '${VelostanFields.id} = ?',
       whereArgs: [id],
     );
   }
