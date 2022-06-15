@@ -11,13 +11,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Velostan extends ChangeNotifier {
-
   // Contrairement à Parking, peut-être qu'une seule variable est suffisante
   // Je laisse deux au cas (switch avec JC Decaux)
   static List<VelostanCarto> _stationsFromAPI = [];
   static List<VelostanCarto> _stations = [];
   List<Marker> _stationsMarkers = [];
-  late VelostanSation _selectedStation;
+  late VelostanSation _stationDynamicData;
 
   // Récupère markers des stations avec nom, adresse, coordonnées...
   static const String _uriCarto = 'http://www.velostanlib.fr/service/carto';
@@ -74,7 +73,11 @@ class Velostan extends ChangeNotifier {
 
       // De Json à Map
       Map<String, dynamic> data = jsonDecode(respJson);
+      _stationDynamicData = VelostanSation.fromAPIJson(data);
+
       print(data['station']);
+      inspect(_stationDynamicData);
+      
     } catch (e) {
       print('Caught error for velostan station fetch : $e');
     }
@@ -83,17 +86,22 @@ class Velostan extends ChangeNotifier {
   Future velostanCartoToDatabase() async {
     _stationsFromAPI.forEach((VelostanCarto) async {
       // createVelostanCarto : void ? ou test ?
-      var id = await VelostanDatabase.instance.createVelostanCarto(VelostanCarto);
+      var id =
+          await VelostanDatabase.instance.createVelostanCarto(VelostanCarto);
       // print(id.toStringKC());
     });
     VelostanCarto test = await VelostanDatabase.instance.getVelostanCarto("27");
     inspect(test);
-
   }
 
   List<VelostanCarto> getVelostanSations() {
     // print("getVelostanStation");
     return _stations;
+  }
+
+  VelostanSation getStationDynamicData(stationID) {
+    
+    return _stationDynamicData;
   }
 
   /**
@@ -119,6 +127,16 @@ class Velostan extends ChangeNotifier {
     _stationsMarkers = markers;
     // print("CreateMarker Stations Velo ${_stationsMarkers.length}");
     // notifyListeners();
+  }
+
+  VelostanCarto getVelostationFromCoordinates(LatLng point) {
+    VelostanCarto stationPopup = _stations.firstWhere((station) =>
+        station.lat == point.latitude &&
+        station.lng == point.longitude);
+    inspect(stationPopup);
+    // fetchVelostanStation('${stationPopup.id}');
+    // notifyListeners();
+    return stationPopup;
   }
 
   List<Marker> getStationsMarkers() {

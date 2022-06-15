@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fr_piscadev_osmtest/data/parking_database.dart';
+import 'package:fr_piscadev_osmtest/models/velostan_carto.dart';
 import 'package:fr_piscadev_osmtest/services/velostan.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -211,7 +212,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (isParkingsSelected && !isBikeSelected) {
                         return ParkingPopup(markers: _markers, marker: marker);
                       } else if (isBikeSelected && !isParkingsSelected) {
-                        return veloPopup(veloMarkers: _veloMarkers);
+                        // VelostanCarto station = velostan(context, listen: false).getVelostationFromCoordinates(marker.point);
+                        // inspect(station)
+                        //? Probablement pas besoin des _veloMarkers en parm dans veloPopup
+                        return veloPopup(veloMarkers: _veloMarkers, marker: marker);
                       } else {
                         return Text("prévoir ce cas");
                       }

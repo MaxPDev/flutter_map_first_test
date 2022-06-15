@@ -110,6 +110,7 @@ class GNy extends ChangeNotifier {
               parking.geometryCoordinates[1], parking.geometryCoordinates[0]),
           width: 30,
           height: 30,
+          // key: ValueK ey("${parking.id}") ,
           builder: (context) => Icon(
                 FontAwesomeIcons.squareParking,
                 size: 30,
@@ -128,6 +129,12 @@ class GNy extends ChangeNotifier {
     return _markers;
   }
 
+  // static int? getAvailableByKey(Key? key) {
+  //   key.toString().replaceAll(RegExp('[^'), '');
+  //   print(key);
+  //   return 2;
+  // }
+
   /**
    * Récupère et rénvoie la propriété available depuis les coordonnées
    */
@@ -139,6 +146,7 @@ class GNy extends ChangeNotifier {
     // notifyListeners();
     return parkingPopup.mgnAvailable;
   }
+
 
   /**
    * Récupère et rénvoie la propriété uiColor_en depuis les coordonnées
