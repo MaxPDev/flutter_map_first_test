@@ -33,57 +33,60 @@ class veloPopup extends StatelessWidget {
      * Le code est regroupé dans cette fonction pour être moins verbeux dans l'utilisation du futureBuilder
      */
     Future<void> _initStationDataPopup() async {
-      // Récupère les données de la station
-      await Provider.of<Velostan>(context, listen: false)
-          .getVelostationFromCoordinates(_marker.point)
-          .then((stationData) async {
-        // une fois reçu, les stock dans la variable
-        _stationData = stationData;
-
-        // Avec l'id de la station, active le fetch des data dynamiques de la station
+      if (_stationData.id == null) {
+        // Récupère les données de la station
         await Provider.of<Velostan>(context, listen: false)
-            .fetchVelostanStation(stationData.id!)
-            .then((value) async {
-          // Puis récupère la variable. Cet étape est séparée de la précédente,
-          // pour pouvoir fetcher séparemment au besoin
-          await Provider.of<Velostan>(context, listen: false)
-              .getStationDynamicData()
-              .then((stationDynamicData) {
-                _stationDynamicData = stationDynamicData;
-              });
+            .getVelostationFromCoordinates(_marker.point)
+            .then((stationData) async {
+          // une fois reçu, les stock dans la variable
+          _stationData = stationData;
 
-          inspect(_stationDynamicData);
+          // Avec l'id de la station, active le fetch des data dynamiques de la station
+          await Provider.of<Velostan>(context, listen: false)
+              .fetchVelostanStation(stationData.id!)
+              .then((value) async {
+            // Puis récupère la variable. Cet étape est séparée de la précédente,
+            // pour pouvoir fetcher séparemment au besoin
+            await Provider.of<Velostan>(context, listen: false)
+                .getStationDynamicData()
+                .then((stationDynamicData) {
+              _stationDynamicData = stationDynamicData;
+            });
+
+            inspect(_stationDynamicData);
+          });
         });
-      });
+      }
     }
 
     return Column(
+      //TODO: Rattrape le fait que la popup s'affiche  en haut de l'écran au lieu de topMarker
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-                // onTap: () => PopupController(
-                //     initiallySelectedMarkers:
-                //         _veloMarkers),
-                onTap: () => inspect(_marker),
-                child: FutureBuilder(
-                  future: _initStationDataPopup(),
-                  builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Main Error: ${snapshot.error}');
-                      // If got data
-                    }
-                    // In this case, future methode is void, so homeScreen
-                    // = hasData()
-                    return StationPopup(
-                        stationData: _stationData,
-                        stationDynamicData: _stationDynamicData);
-                  },
-                )),
+            // onTap: () => PopupController(
+            //     initiallySelectedMarkers:
+            //         _veloMarkers),
+            onTap: () => inspect(_marker),
+            child: FutureBuilder(
+              future: _initStationDataPopup(),
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('Main Error: ${snapshot.error}');
+                  // If got data
+                }
+                // In this case, future methode is void, so homeScreen
+                // = hasData()
+                return StationPopup(
+                    stationData: _stationData,
+                    stationDynamicData: _stationDynamicData);
+              },
+            )),
       ],
     );
   }

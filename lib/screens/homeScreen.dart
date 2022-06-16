@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // final PopupController _popupController = PopupController(initiallySelectedMarkers: _markers);
+  final PopupController _popupController = PopupController();
   final MapController _mapController = MapController();
 
   final gny = Provider.of<GNy>;
@@ -177,7 +177,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   InteractiveFlag.drag, // not rotate
               plugins: [
                 MarkerClusterPlugin(),
-              ]),
+              ],
+              //TODO: Make hide popup when tap map work
+              onTap: (_, __) => _popupController.hidePopupsOnlyFor(_markers)
+              ),
           layers: [
             TileLayerOptions(
               minZoom: 1,
