@@ -57,28 +57,35 @@ class veloPopup extends StatelessWidget {
       });
     }
 
-    return GestureDetector(
-            // onTap: () => PopupController(
-            //     initiallySelectedMarkers:
-            //         _veloMarkers),
-            onTap: () => inspect(_marker),
-            child: FutureBuilder(
-              future: _initStationDataPopup(),
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Main Error: ${snapshot.error}');
-                  // If got data
-                }
-                // In this case, future methode is void, so homeScreen
-                // = hasData()
-                return StationPopup(
-                    stationData: _stationData,
-                    stationDynamicData: _stationDynamicData);
-              },
-            ));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+                // onTap: () => PopupController(
+                //     initiallySelectedMarkers:
+                //         _veloMarkers),
+                onTap: () => inspect(_marker),
+                child: FutureBuilder(
+                  future: _initStationDataPopup(),
+                  builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return Text('Main Error: ${snapshot.error}');
+                      // If got data
+                    }
+                    // In this case, future methode is void, so homeScreen
+                    // = hasData()
+                    return StationPopup(
+                        stationData: _stationData,
+                        stationDynamicData: _stationDynamicData);
+                  },
+                )),
+      ],
+    );
   }
 }
 
