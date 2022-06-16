@@ -40,6 +40,7 @@ class Velostan extends ChangeNotifier {
       // Conversion xml en json
       final Xml2Json xml2json = Xml2Json();
       xml2json.parse(resp.body);
+      // toBadgerFish() permet de récupérer facilement les attribut (voir doc de xml2json)
       String respJson = xml2json.toBadgerfish();
 
       // De Json à Map
@@ -51,6 +52,7 @@ class Velostan extends ChangeNotifier {
       _stationsFromAPI.clear();
       for (var station in data['carto']['markers']['marker']) {
         _stationsFromAPI.add(VelostanCarto.fromAPIJson(station));
+        // print(data['carto']['markers']['marker']);
       }
       await velostanCartoToDatabase();
       _stations = await VelostanDatabase.instance.getAllVelostanCarto();
@@ -69,11 +71,12 @@ class Velostan extends ChangeNotifier {
       // Conversion xml en json
       final Xml2Json xml2json = Xml2Json();
       xml2json.parse(resp.body);
-      String respJson = xml2json.toBadgerfish();
+      // toParker() permet de récupérer facilement les valeurs (voir doc de xml2json)
+      String respJson = xml2json.toParker();
 
       // De Json à Map
       Map<String, dynamic> data = jsonDecode(respJson);
-      _stationDynamicData = VelostanSation.fromAPIJson(data);
+      _stationDynamicData = VelostanSation.fromAPIJson(data['station']);
 
       print(data['station']);
       inspect(_stationDynamicData);

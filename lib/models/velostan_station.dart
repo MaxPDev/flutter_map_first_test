@@ -2,9 +2,9 @@ class VelostanSation {
   // ne pas sotcker en BD
 
   //? final String? id // le fournir depuis la requête
-  final int? available;
-  final int? free;
-  final int? total;
+  final String? available;
+  final String? free;
+  final String? total;
   final bool? ticket;
   final bool? open;
   // final DateTime? updated;
@@ -21,9 +21,9 @@ class VelostanSation {
   });
 
   VelostanSation copyWith({
-    int? available,
-    int? free,
-    int? total,
+    String? available,
+    String? free,
+    String? total,
     bool? ticket,
     bool? open,
     // DateTime? updated,
@@ -44,9 +44,9 @@ class VelostanSation {
         // Exemple de rappel pour gérer le null :
         // id: json["id"] == null ? null : json["id"],
 
-        available: json["available"] == null ? null : json["@number"] as int,
-        free: json["free"] == null ? null : json["free"] as int,
-        total: json["total"] == null ? null : json["total"] as int,
+        available: json["available"] == null ? null : json["available"],
+        free: json["free"] == null ? null : json["free"],
+        total: json["total"] == null ? null : json["total"],
         ticket: json["ticket"] == null ? null : json["ticket"] == "1",
         open: json["open"] == null ? null : json["open"] == "1",
         connected: json["connected"] == null ? null : json["connected"] == "1");

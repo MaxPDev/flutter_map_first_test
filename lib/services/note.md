@@ -56,3 +56,9 @@ Here are 2 common ways this could go wrong:
 
     double.parse(val.toString());
 
+
+-----------------------------------
+
+(fromJson stuff : cast json to object)
+
+flutter: Caught error for velostan station fetch : type 'String' is not a subtype of type 'int' in type cast
