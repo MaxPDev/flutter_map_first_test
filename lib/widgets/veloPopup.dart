@@ -15,7 +15,9 @@ class veloPopup extends StatelessWidget {
     required List<Marker> veloMarkers,
     required Marker marker,
     // required VelostanCarto station,
-  }) : _veloMarkers = veloMarkers, _marker = marker, super(key: key);
+  })  : _veloMarkers = veloMarkers,
+        _marker = marker,
+        super(key: key);
 
   final List<Marker> _veloMarkers;
   final Marker _marker;
@@ -23,33 +25,95 @@ class veloPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    VelostanCarto stationVelo = 
-      Provider.of<Velostan>(context, listen: false).getVelostationFromCoordinates(_marker.point);
+    VelostanCarto _stationData = new VelostanCarto(lat: 0, lng: 0);
+    VelostanSation _stationDynamicData = new VelostanSation();
 
-    // VelostanSation stationDynamicData = 
-    //   Provider.of<Velostan>(context, listen: false).getStationDynamicData(stationVelo.id);
+    /**
+     * Initialise les données nécessaire pour remplir la popup des stations vélo
+     * Le code est regroupé dans cette fonction pour être moins verbeux dans l'utilisation du futureBuilder
+     */
+    Future<void> _initStationDataPopup() async {
+      // Récupère les données de la station
+      await Provider.of<Velostan>(context, listen: false)
+          .getVelostationFromCoordinates(_marker.point)
+          .then((stationData) async {
+        // une fois reçu, les stock dans la variable
+        _stationData = stationData;
 
-    Provider.of<Velostan>(context, listen: false).fetchVelostanStation(stationVelo.id!);
+        // Avec l'id de la station, active le fetch des data dynamiques de la station
+        await Provider.of<Velostan>(context, listen: false)
+            .fetchVelostanStation(stationData.id!)
+            .then((value) async {
+          // Puis récupère la variable. Cet étape est séparée de la précédente,
+          // pour pouvoir fetcher séparemment au besoin
+          await Provider.of<Velostan>(context, listen: false)
+              .getStationDynamicData()
+              .then((stationDynamicData) {
+                _stationDynamicData = stationDynamicData;
+              });
 
-    return Container(
-        alignment: Alignment.center,
-        height: 50,
-        width: 70,
-        decoration: BoxDecoration(
-            color: Color.fromARGB(255, 81, 189, 108), shape: BoxShape.rectangle),
-        child: GestureDetector(
-          // onTap: () => PopupController(
-          //     initiallySelectedMarkers:
-          //         _veloMarkers), 
-          onTap: () => inspect(_marker),
-          child: Text(
-            // penser à mettre à jour ceci, alors que marker sont fixe (mise à jour plus rarement, et ceux affichés doivent être issues de la BD)
-            "widget velo to do ${stationVelo.name}",
-            style: TextStyle(
-                color: Colors.white, fontSize: 10),
-          ),
-        ));
+          inspect(_stationDynamicData);
+        });
+      });
+    }
+
+    return GestureDetector(
+            // onTap: () => PopupController(
+            //     initiallySelectedMarkers:
+            //         _veloMarkers),
+            onTap: () => inspect(_marker),
+            child: FutureBuilder(
+              future: _initStationDataPopup(),
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return Text('Main Error: ${snapshot.error}');
+                  // If got data
+                }
+                // In this case, future methode is void, so homeScreen
+                // = hasData()
+                return StationPopup(
+                    stationData: _stationData,
+                    stationDynamicData: _stationDynamicData);
+              },
+            ));
   }
 }
 
+class StationPopup extends StatelessWidget {
+  const StationPopup({
+    Key? key,
+    required VelostanCarto stationData,
+    required VelostanSation stationDynamicData,
+  })  : _stationData = stationData,
+        _stationDynamicData = stationDynamicData,
+        super(key: key);
 
+  final VelostanCarto _stationData;
+  final VelostanSation _stationDynamicData;
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      backgroundColor: Color.fromARGB(255, 161, 219, 176),
+      title: Text(
+        "${_stationData.name}",
+        textDirection: TextDirection.ltr,
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+      children: <Widget>[
+        SimpleDialogOption(
+          child: Text(
+            "Velo disponible : ${_stationDynamicData.available}",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        SimpleDialogOption(
+          child: Text("Emplacements libre : ${_stationDynamicData.free}"),
+        )
+      ],
+    );
+  }
+}

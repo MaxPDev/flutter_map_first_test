@@ -56,7 +56,7 @@ class Velostan extends ChangeNotifier {
       }
       await velostanCartoToDatabase();
       _stations = await VelostanDatabase.instance.getAllVelostanCarto();
-      print("fetchVelostanCarto + intro DB : ${_stations.length}");
+      // print("fetchVelostanCarto + intro DB : ${_stations.length}");
       notifyListeners();
     } catch (e) {
       print('Caught error for velostan carto fetch : $e');
@@ -78,8 +78,8 @@ class Velostan extends ChangeNotifier {
       Map<String, dynamic> data = jsonDecode(respJson);
       _stationDynamicData = VelostanSation.fromAPIJson(data['station']);
 
-      print(data['station']);
-      inspect(_stationDynamicData);
+      // print(data['station']);
+      // inspect(_stationDynamicData);
       
     } catch (e) {
       print('Caught error for velostan station fetch : $e');
@@ -94,7 +94,7 @@ class Velostan extends ChangeNotifier {
       // print(id.toStringKC());
     });
     VelostanCarto test = await VelostanDatabase.instance.getVelostanCarto("27");
-    inspect(test);
+    // inspect(test);
   }
 
   List<VelostanCarto> getVelostanSations() {
@@ -102,8 +102,7 @@ class Velostan extends ChangeNotifier {
     return _stations;
   }
 
-  VelostanSation getStationDynamicData(stationID) {
-    
+  Future<VelostanSation> getStationDynamicData() async { 
     return _stationDynamicData;
   }
 
@@ -125,18 +124,18 @@ class Velostan extends ChangeNotifier {
                 color: Colors.greenAccent,
               )));
     }
-    inspect(markers);
+    // inspect(markers);
     _stationsMarkers.clear();
     _stationsMarkers = markers;
     // print("CreateMarker Stations Velo ${_stationsMarkers.length}");
     // notifyListeners();
   }
 
-  VelostanCarto getVelostationFromCoordinates(LatLng point) {
+  Future<VelostanCarto> getVelostationFromCoordinates(LatLng point) async {
     VelostanCarto stationPopup = _stations.firstWhere((station) =>
         station.lat == point.latitude &&
         station.lng == point.longitude);
-    inspect(stationPopup);
+    // inspect(stationPopup);
     // fetchVelostanStation('${stationPopup.id}');
     // notifyListeners();
     return stationPopup;
