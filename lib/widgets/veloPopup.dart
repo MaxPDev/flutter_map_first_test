@@ -38,6 +38,19 @@ class veloPopup extends StatelessWidget {
         await Provider.of<Velostan>(context, listen: false)
             .getVelostationFromCoordinates(_marker.point)
             .then((stationData) async {
+          // // get previoud station id popup selected :
+          // String oldId = Provider.of<Velostan>(context, listen: false)
+          //   .stationIdFromPopupSelected;
+
+          // if(stationData.id != oldId) {
+          // print("station id already set, station id received :");
+          // print(oldId);
+          // print(stationData.id);
+
+          // // Stock l'id de la station pour pouvoir la comparer
+          // Provider.of<Velostan>(context, listen: false)
+          //   .stationIdFromPopupSelected = stationData.id!;
+
           // une fois reçu, les stock dans la variable
           _stationData = stationData;
 
@@ -55,6 +68,7 @@ class veloPopup extends StatelessWidget {
 
             inspect(_stationDynamicData);
           });
+          // } //if
         });
       }
     }

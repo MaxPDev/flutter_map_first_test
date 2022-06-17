@@ -44,9 +44,9 @@ class VelostanSation {
         // Exemple de rappel pour gérer le null :
         // id: json["id"] == null ? null : json["id"],
 
-        available: json["available"] == null ? null : json["available"],
-        free: json["free"] == null ? null : json["free"],
-        total: json["total"] == null ? null : json["total"],
+        available: json["available"] ?? null,
+        free: json["free"] ?? null,
+        total: json["total"] ?? null,
         ticket: json["ticket"] == null ? null : json["ticket"] == "1",
         open: json["open"] == null ? null : json["open"] == "1",
         connected: json["connected"] == null ? null : json["connected"] == "1");

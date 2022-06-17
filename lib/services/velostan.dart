@@ -17,6 +17,7 @@ class Velostan extends ChangeNotifier {
   static List<VelostanCarto> _stations = [];
   List<Marker> _stationsMarkers = [];
   late VelostanSation _stationDynamicData;
+  // String stationIdFromPopupSelected = ""; // se souvenir de la popup active pour faire condition et éviter multiples requêtes. Contournement.
 
   // Récupère markers des stations avec nom, adresse, coordonnées...
   static const String _uriCarto = 'http://www.velostanlib.fr/service/carto';
@@ -93,8 +94,6 @@ class Velostan extends ChangeNotifier {
           await VelostanDatabase.instance.createVelostanCarto(VelostanCarto);
       // print(id.toStringKC());
     });
-    VelostanCarto test = await VelostanDatabase.instance.getVelostanCarto("27");
-    // inspect(test);
   }
 
   List<VelostanCarto> getVelostanSations() {
@@ -121,7 +120,7 @@ class Velostan extends ChangeNotifier {
           builder: (context) => Icon(
                 FontAwesomeIcons.bicycle,
                 size: 30,
-                color: Colors.greenAccent,
+                color: Color.fromARGB(255, 14, 179, 99),
               )));
     }
     // inspect(markers);
