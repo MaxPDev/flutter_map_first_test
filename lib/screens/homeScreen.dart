@@ -14,8 +14,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fr_piscadev_osmtest/models/parking.dart';
 import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 import 'package:fr_piscadev_osmtest/services/velostan.dart';
+import 'package:fr_piscadev_osmtest/services/busOSM.dart';
 import 'package:fr_piscadev_osmtest/widgets/parkingPopup.dart';
 import 'package:fr_piscadev_osmtest/widgets/veloPopup.dart';
+
 
 import 'dart:developer';
 
@@ -32,9 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final PopupController _popupController = PopupController();
   final MapController _mapController = MapController();
 
+  // Providers
   final gny = Provider.of<GNy>;
-
   final velostan = Provider.of<Velostan>;
+  final busOSM = Provider.of<BusOSM>;
 
   bool isParkingsSelected = true;
   bool isBikeSelected = false;
@@ -270,7 +273,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 icon: Icon(Icons.pedal_bike_rounded)),
-            IconButton(onPressed: () {}, icon: Icon(Icons.bus_alert)),
+            IconButton(onPressed: () {
+              busOSM(context, listen: false).fetchBusOSM();
+            }, icon: Icon(Icons.bus_alert)),
             IconButton(
                 onPressed: () {
                   setState(() {

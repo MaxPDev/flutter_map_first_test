@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 // import 'package:fr_piscadev_osmtest/models/parking.dart';
 // import 'package:fr_piscadev_osmtest/services/g_ny.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:fr_piscadev_osmtest/services/busOSM.dart';
 import 'package:fr_piscadev_osmtest/services/velostan.dart';
 import 'package:provider/provider.dart';
 import 'package:fr_piscadev_osmtest/screens/homeScreen.dart';
@@ -18,6 +19,8 @@ import 'package:sqflite/sqflite.dart';
 
 void main() async {
   // await deleteDatabase('parkings.db');
+
+  //* Mettre dans le provider les services.
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -25,6 +28,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => Velostan(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BusOSM(),
         )
       ],
       child: MaterialApp(
