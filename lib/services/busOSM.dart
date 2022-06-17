@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fr_piscadev_osmtest/models/overpass_query.dart';
+import 'package:fr_piscadev_osmtest/services/overpassAPI.dart';
 
 class BusOSM extends ChangeNotifier {
 
@@ -30,7 +31,10 @@ class BusOSM extends ChangeNotifier {
 
   Future<void> fetchBusOSM() async {
     try {
-      print(_overpassQuery.buildBodyRequestNodeOut("public_transport", "stop_position"));
+      String requestBody = _overpassQuery.buildBodyRequestNodeOut("public_transport", "stop_position");
+      String response = await OverpassAPI.fetch(requestBody);
+      print(response);
+      
     } catch (e) {
       print('Caught error for busOSM carto fetch : $e');
     }

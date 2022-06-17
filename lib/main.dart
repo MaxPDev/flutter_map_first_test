@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter_map/flutter_map.dart';
 // import 'package:latlong2/latlong.dart';
 // import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
@@ -18,7 +21,20 @@ import 'dart:developer';
 import 'package:sqflite/sqflite.dart';
 
 void main() async {
+
+  // // à vérifier avant prod https://letsencrypt.org/fr/getting-started/
+  // // https://stackoverflow.com/questions/54285172/how-to-solve-flutter-certificate-verify-failed-error-while-performing-a-post-req
+  // WidgetsFlutterBinding.ensureInitialized();
+
+  // ByteData data =
+  //     await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
+  // SecurityContext.defaultContext
+  //     .setTrustedCertificatesBytes(data.buffer.asUint8List());
+
   // await deleteDatabase('parkings.db');
+
+  //! à ne pas faire en prod ?
+  HttpOverrides.global = MyHttpOverrides();
 
   //* Mettre dans le provider les services.
   runApp(MultiProvider(
@@ -159,4 +175,16 @@ class CenteredCircularProgressIdicator extends StatelessWidget {
         child: SizedBox(
             height: 27, width: 27, child: CircularProgressIndicator()));
   }
+
+  
 }
+
+
+ class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
+}
+

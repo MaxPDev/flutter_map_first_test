@@ -62,3 +62,11 @@ Here are 2 common ways this could go wrong:
 (fromJson stuff : cast json to object)
 
 flutter: Caught error for velostan station fetch : type 'String' is not a subtype of type 'int' in type cast
+
+
+-------------------------------
+
+http body Map<String, String> :
+Si c'est juste un body de texte, (row dans postman) :
+la key est data
+'data':
