@@ -40,6 +40,7 @@ class OverpassAPI {
 
     try {
       responseJson = jsonDecode(responseText);
+      print(responseJson);
       return responseJson;
     }
     catch (exception) {
